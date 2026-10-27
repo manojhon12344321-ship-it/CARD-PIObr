@@ -2,193 +2,85 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BURGER HOUSE - Peça na Mesa</title>
+<title>BURGER HOUSE</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>body{font-family:Inter,system-ui} .no-scrollbar::-webkit-scrollbar{display:none}</style>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@900&display=swap" rel="stylesheet">
+<style>body{font-family:Inter}.bebas{font-family:'Bebas Neue'}</style>
 </head>
-<body class="bg-[#F6F6F7] text-[#111] antialiased">
-
-<header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-zinc-200">
-<div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-<div class="flex items-center gap-3"><div class="w-10 h-10 bg-black text-[#FFCC00] rounded-xl grid place-items-center font-black text-lg">BH</div><div><p class="font-black leading-none text-[16px]">BURGER HOUSE</p><p class="text-[11px] text-zinc-500 font-bold tracking-widest">SCAN • ORDER • EAT</p></div></div>
-<div class="flex items-center gap-2">
-<div id="mesaBadge" class="bg-[#FFCC00] text-black px-4 py-2 rounded-full font-black text-sm">MESA --</div>
-<button onclick="openCart()" class="bg-black text-white px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2">🛒 <span id="cartCount">0</span> • R$ <span id="cartTotal">0,00</span></button>
-</div>
-</div>
-</header>
-
-<!-- TRACKING COM TEMPO ESTIMADO -->
-<div id="trackingWrap" class="hidden max-w-7xl mx-auto px-4 mt-4">
-<div class="bg-black text-white rounded-[24px] p-5 border border-zinc-800">
-<div class="flex justify-between items-center"><p class="font-black text-sm">🔥 SEUS PEDIDOS • MESA <span id="trackMesa">--</span></p><p class="text-[11px] bg-white/10 px-3 py-1 rounded-full">TEMPO REAL</p></div>
-<div id="trackList" class="mt-4 grid gap-3"></div>
-</div>
-</div>
-
-<div class="max-w-7xl mx-auto px-4 py-6 grid lg:grid-cols-[1fr_360px] gap-6 items-start">
-<div>
-<div class="bg-[#FFCC00] rounded-[28px] p-6 md:p-8 border-2 border-black">
-<p class="font-black text-3xl md:text-5xl leading-[0.9]">O MELHOR<br>BURGER DA<br>CIDADE 🔥</p>
-<p class="mt-3 font-semibold text-sm md:text-base">Peça direto da mesa, sem garçom. Rápido e sem erro.</p>
-<div class="mt-4 flex gap-2 overflow-auto no-scrollbar">
-<button onclick="filtrarCat('todos')" id="btn-todos" class="catBtn bg-black text-white px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap">TODOS (18)</button>
-<button onclick="filtrarCat('burgers')" id="btn-burgers" class="catBtn bg-white border-2 border-black px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap">BURGERS</button>
-<button onclick="filtrarCat('combos')" id="btn-combos" class="catBtn bg-white border-2 border-black px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap">COMBOS</button>
-<button onclick="filtrarCat('porcoes')" id="btn-porcoes" class="catBtn bg-white border-2 border-black px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap">PORÇÕES</button>
-<button onclick="filtrarCat('bebidas')" id="btn-bebidas" class="catBtn bg-white border-2 border-black px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap">BEBIDAS</button>
-</div>
-<input id="busca" placeholder="🔍 Buscar Whopper, batata..." class="mt-4 w-full bg-white border-2 border-black p-4 rounded-full text-sm font-bold outline-none" oninput="renderProdutos()">
-</div>
-
-<div id="gridProdutos" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-</div>
-
-<!-- SACOLA -->
-<div class="lg:sticky lg:top-[80px]">
-<div class="bg-white rounded-[24px] border border-zinc-200 p-5">
-<p class="font-black text-lg">🛒 SUA SACOLA • MESA <span id="sacolaMesa">--</span></p>
-<div id="cartList" class="mt-4 grid gap-3 max-h-[50vh] overflow-auto pr-1"></div>
-<div class="mt-5 border-t pt-4 space-y-3">
-<input id="cliNome" placeholder="Seu nome *" class="w-full bg-[#F6F6F7] border border-zinc-200 p-3.5 rounded-xl text-sm font-bold outline-none" oninput="validarCheckout()">
-<input id="cliWhats" placeholder="WhatsApp (com DDD) *" class="w-full bg-[#F6F6F7] border border-zinc-200 p-3.5 rounded-xl text-sm font-bold outline-none" oninput="validarCheckout()">
-<textarea id="obsGeral" placeholder="Obs geral da mesa (ex: sem cebola em todos, ketchup à parte)" class="w-full bg-[#F6F6F7] border border-zinc-200 p-3.5 rounded-xl text-sm font-semibold outline-none h-20"></textarea>
-<div class="bg-zinc-900 text-white rounded-xl p-3.5 flex justify-between"><p class="font-bold text-sm">TOTAL</p><p id="checkoutTotal" class="font-black text-lg">R$ 0,00</p></div>
-<button id="btnEnviar" disabled onclick="enviarPedido()" class="w-full bg-zinc-300 text-zinc-500 py-4 rounded-full font-black text-sm transition">PREENCHA NOME E WHATS</button>
-<p class="text-[10px] text-zinc-400 text-center">⏱️ Após enviar, a cozinha vai informar o tempo estimado aqui em cima</p>
-</div>
-</div>
-</div>
-</div>
-
-<!-- MODAL PRODUTO -->
-<div id="modalProd" class="hidden fixed inset-0 bg-black/50 backdrop-blur z-[100] flex items-end md:items-center justify-center p-0 md:p-6">
-<div class="bg-white w-full md:max-w-[560px] rounded-t-[28px] md:rounded-[28px] overflow-hidden border max-h-[92vh] flex flex-col">
-<div id="modalProdContent"></div>
-</div>
-</div>
-
+<body class="bg-[#0B0B0B] text-white pb-32">
+<header class="sticky top-0 z-30 bg-black/90 backdrop-blur border-b border-white/5"><div class="max-w-[1200px] mx-auto px-4 py-3 flex justify-between items-center"><div class="flex gap-3 items-center"><div id="logoAdmin" class="w-9 h-9 bg-yellow-400 rounded-full grid place-items-center text-black font-black cursor-pointer">BH</div><p class="bebas text-xl">BURGER HOUSE</p></div><div id="mesaBadge" class="hidden bg-white text-black px-4 py-1 rounded-full text-xs font-black">MESA <span id="mesaNum"></span></div></div></header>
+<main class="max-w-[1200px] mx-auto px-4"><div id="heroMesa" class="hidden mt-4 bg-yellow-400 text-black rounded-[28px] p-5 flex justify-between"><div><p class="text-[10px] font-black">VOCÊ ESTÁ NA</p><p class="bebas text-5xl">MESA <span id="heroMesaNum"></span></p></div><div class="text-5xl">🍔</div></div>
+<div class="mt-6 flex gap-2 overflow-auto pb-2"><button onclick="filtrar('todos')" id="f-todos" class="bg-yellow-400 text-black px-5 py-2 rounded-full text-xs font-black">TODOS • 18</button><button onclick="filtrar('burger')" id="f-burger" class="bg-white/10 px-5 py-2 rounded-full text-xs font-bold">🍔 BURGERS</button><button onclick="filtrar('porcao')" id="f-porcao" class="bg-white/10 px-5 py-2 rounded-full text-xs font-bold">🍟 PORÇÕES</button><button onclick="filtrar('bebida')" id="f-bebida" class="bg-white/10 px-5 py-2 rounded-full text-xs font-bold">🥤 BEBIDAS</button></div>
+<div id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4"></div></main>
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black"><div class="max-w-[1200px] mx-auto"><div class="bg-white text-black rounded-[24px] p-4 flex justify-between"><div><p class="text-[10px] text-zinc-400">MESA <span id="sacolaMesa">-</span></p><p id="sacolaTotal" class="font-black">R$ 0,00 • 0 itens</p></div><button id="btnVerSacola" class="bg-black text-white px-6 py-3 rounded-full font-black text-sm">VER SACOLA</button></div></div></div>
+<div id="trackingWrap" class="fixed bottom-[88px] left-0 right-0 p-4 hidden"><div class="max-w-[1200px] mx-auto"><div class="bg-[#1A1A1A] border border-yellow-400/20 rounded-[24px] p-4"><p class="font-black text-[11px] text-yellow-400">📍 SEU PEDIDO • MESA <span id="trackMesa"></span></p><div id="trackList" class="mt-3 grid gap-2"></div></div></div></div>
+<div id="modalSacola" class="hidden fixed inset-0 bg-black/80 z-50 flex items-end justify-center"><div class="bg-white text-black rounded-t-[32px] w-full max-w-[480px] max-h-[92vh] flex flex-col"><div class="p-6 border-b flex justify-between"><p class="font-black text-xl">Sacola • Mesa <span id="modalMesa"></span></p><button onclick="closeSacola()" class="w-8 h-8 bg-zinc-100 rounded-full">✕</button></div><div id="carrinho" class="flex-1 overflow-auto p-4"></div><div class="p-6 border-t"><textarea id="obs" placeholder="Obs: tirar cebola..." class="w-full bg-zinc-100 p-3 rounded-2xl text-sm h-14 outline-none"></textarea><input id="nome" placeholder="Seu nome *" class="w-full mt-3 bg-zinc-100 p-4 rounded-2xl text-sm outline-none"><input id="whats" placeholder="WhatsApp *" class="w-full mt-2 bg-zinc-100 p-4 rounded-2xl text-sm outline-none"><div class="flex justify-between mt-4"><span>Total</span><span id="total" class="font-black text-2xl">R$ 0,00</span></div><button id="btnPedir" class="w-full mt-4 bg-yellow-400 text-black py-5 rounded-full font-black">🍔 ENVIAR PRA COZINHA</button><p class="text-[10px] text-zinc-400 text-center mt-2">⏱️ Após enviar, a cozinha informa o tempo estimado aqui</p></div></div></div>
+<div id="modalLanche" class="hidden fixed inset-0 bg-black/90 z-[60] flex items-end justify-center"><div class="bg-[#181818] rounded-t-[32px] w-full max-w-[520px]"><img id="mFoto" class="w-full h-[300px] object-cover"><div class="p-6"><h3 id="mNome" class="bebas text-3xl"></h3><p id="mDesc" class="text-sm text-white/50"></p><p id="mPrecoBase" class="font-black text-2xl text-yellow-400 mt-2"></p><div id="mAdds" class="mt-4 grid gap-2"></div><div class="mt-4 bg-white text-black rounded-2xl p-4 flex justify-between"><span>TOTAL</span><span id="mTotal" class="font-black"></span></div><button id="mAdd" class="w-full mt-4 bg-yellow-400 text-black py-5 rounded-full font-black">ADICIONAR</button><button onclick="closeModal()" class="w-full mt-3 text-white/30 text-xs">Fechar</button></div></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDfnlWLGHySS42WMOcve1qP-dSH3cF-J50",authDomain:"cardapiobr-be645.firebaseapp.com",projectId:"cardapiobr-be645",storageBucket:"cardapiobr-be645.firebasestorage.app",messagingSenderId:"1013095361613",appId:"1:1013095361613:web:31d58aa9ebda0135110004"};
-firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
-
-const PRODUTOS=[
-{id:1,nome:"Whopper Clássico",cat:"burgers",preco:32,desc:"Pão brioche, 180g blend, cheddar, bacon",foto:"https://images.unsplash.com/photo-1568909344668-6f14a07b56a0?q=80&w=600"},
-{id:2,nome:"Cheddar Duplo",cat:"burgers",preco:38,desc:"2x 180g, muito cheddar cremoso",foto:"https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=600"},
-{id:3,nome:"Chicken Crispy",cat:"burgers",preco:30,desc:"Frango empanado crocante + maionese da casa",foto:"https://images.unsplash.com/photo-1521390188846-e2a3a97453a0?q=80&w=600"},
-{id:4,nome:"Veggie House",cat:"burgers",preco:28,desc:"Burger de grão de bico, rúcula e tomate",foto:"https://images.unsplash.com/photo-1520072959219-c595dc870360?q=80&w=600"},
-{id:5,nome:"Bacon Bomb",cat:"burgers",preco:42,desc:"3 carnes, 6 fatias bacon, cheddar triplo",foto:"https://images.unsplash.com/photo-1553979459-d2229ba7433b?q=80&w=600"},
-{id:6,nome:"Onion Smash",cat:"burgers",preco:35,desc:"Smash com cebola caramelizada",foto:"https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=600"},
-{id:7,nome:"Combo Whopper + Fritas + Refri",cat:"combos",preco:49,desc:"Whopper clássico completo",foto:"https://images.unsplash.com/photo-1561758033-d89a9ad46330?q=80&w=600"},
-{id:8,nome:"Combo Duplo Cheddar",cat:"combos",preco:59,desc:"Cheddar duplo + fritas G + refri 500ml",foto:"https://images.unsplash.com/photo-1593246049226-ded77bf90326?q=80&w=600"},
-{id:9,nome:"Combo Família 4 pessoas",cat:"combos",preco:139,desc:"4 burgers + 2 fritas G + 2 refri 1L",foto:"https://images.unsplash.com/photo-1551782450-a2132b4ba21d?q=80&w=600"},
-{id:10,nome:"Combo Kids",cat:"combos",preco:29,desc:"Mini burger + fritas P + suco",foto:"https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=600"},
-{id:11,nome:"Batata Frita P",cat:"porcoes",preco:14,desc:"Crocante por fora, macia por dentro",foto:"https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=600"},
-{id:12,nome:"Batata Frita G + Cheddar e Bacon",cat:"porcoes",preco:28,desc:"400g com muito cheddar e bacon",foto:"https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?q=80&w=600"},
-{id:13,nome:"Onion Rings",cat:"porcoes",preco:18,desc:"Anéis de cebola crocantes",foto:"https://images.unsplash.com/photo-1639024471285-5ff5d1bb88f4?q=80&w=600"},
-{id:14,nome:"Nuggets 10un",cat:"porcoes",preco:22,desc:"Frango crocante + barbecue",foto:"https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=600"},
-{id:15,nome:"Coca-Cola Lata",cat:"bebidas",preco:6,desc:"350ml gelada",foto:"https://images.unsplash.com/photo-1553456558-aff63285bdd1?q=80&w=600"},
-{id:16,nome:"Guaraná 1L",cat:"bebidas",preco:10,desc:"1 litro gelado",foto:"https://images.unsplash.com/photo-1624557682221-993aef7aad9e?q=80&w=600"},
-{id:17,nome:"Milkshake Chocolate",cat:"bebidas",preco:16,desc:"400ml cremoso",foto:"https://images.unsplash.com/photo-1579954115545-a95591f28bfc?q=80&w=600"},
-{id:18,nome:"Suco Natural Laranja",cat:"bebidas",preco:9,desc:"500ml natural",foto:"https://images.unsplash.com/photo-1613478883965-4b2b13baa78a?q=80&w=600"},
+let db;try{firebase.initializeApp(firebaseConfig);db=firebase.firestore();}catch(e){}
+let mesa=new URLSearchParams(location.search).get('mesa')||localStorage.getItem('mesa')||'';let carrinho=[],detalhe=null,adds=[],pedidos=[],filtro='todos';
+const cardapio=[
+{nome:'WHOPPER HOUSE',preco:32,desc:'Pão brioche, blend 180g, cheddar.',foto:'https://images.unsplash.com/photo-1568909344668-6f14a07b56a0?w=600',cat:'burger'},
+{nome:'CHEDDAR DUPLO',preco:42,desc:'Dois blends, cheddar e bacon.',foto:'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=600',cat:'burger'},
+{nome:'BATATA TRUFADA',preco:28,desc:'350g batata, cheddar, bacon bits.',foto:'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600',cat:'porcao'},
+{nome:'SMASH CLASSIC',preco:26,desc:'Smash 90g, cheddar, picles, cebola.',foto:'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600',cat:'burger'},
+{nome:'BACON TRIPLO',preco:48,desc:'Três carnes, triplo bacon, triplo cheddar.',foto:'https://images.unsplash.com/photo-1593246049226-ded77bf90326?w=600',cat:'burger'},
+{nome:'ONION MELT',preco:34,desc:'Blend 180g, cebola caramelizada, suíço.',foto:'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600',cat:'burger'},
+{nome:'FRANGO CRISPY',preco:30,desc:'Peito empanado crocante, maionese, alface.',foto:'https://images.unsplash.com/photo-1606756790138-261d2b21cd75?w=600',cat:'burger'},
+{nome:'VEGGIE HOUSE',preco:28,desc:'Burger grão de bico, queijo, rúcula.',foto:'https://images.unsplash.com/photo-1520072959219-c595dc870360?w=600',cat:'burger'},
+{nome:'COSTELA BBQ',preco:44,desc:'Burger costela 180g, onion, BBQ.',foto:'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=600',cat:'burger'},
+{nome:'BATATA SIMPLES',preco:18,desc:'250g batata frita crocante.',foto:'https://images.unsplash.com/photo-1585109649139-366815a0d713?w=600',cat:'porcao'},
+{nome:'BATATA COM CHEDDAR',preco:24,desc:'300g batata + cheddar derretido.',foto:'https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=600',cat:'porcao'},
+{nome:'ONION RINGS',preco:22,desc:'12 anéis cebola, molho barbecue.',foto:'https://images.unsplash.com/photo-1639024471283-03518883512d?w=600',cat:'porcao'},
+{nome:'NUGGETS 10UN',preco:20,desc:'10 nuggets + mostarda e mel.',foto:'https://images.unsplash.com/photo-1562967914-608f82629710?w=600',cat:'porcao'},
+{nome:'COCA LATA 350ML',preco:6,desc:'Coca-Cola gelada lata.',foto:'https://images.unsplash.com/photo-1624552168657-1d2bb6298d51?w=600',cat:'bebida'},
+{nome:'GUARANÁ LATA',preco:6,desc:'Guaraná Antarctica 350ml.',foto:'https://images.unsplash.com/photo-1624552168174-48a1183bc2ff?w=600',cat:'bebida'},
+{nome:'ÁGUA 500ML',preco:4,desc:'Água mineral sem gás.',foto:'https://images.unsplash.com/photo-1523369364227-2498b8c533c0?w=600',cat:'bebida'},
+{nome:'SUCO NATURAL',preco:8,desc:'Laranja, maracujá ou abacaxi 400ml.',foto:'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=600',cat:'bebida'},
+{nome:'MILKSHAKE OREO',preco:16,desc:'Milkshake cremoso Oreo 400ml.',foto:'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600',cat:'bebida'},
 ];
-const EXTRAS=[
-{nome:"Cheddar extra",preco:4},{nome:"Bacon extra",preco:5},{nome:"Ovo",preco:3},{nome:"Sem cebola",preco:0},{nome:"Maionese extra",preco:2},{nome:"Pimenta",preco:0}
-];
-
-let mesa=new URLSearchParams(location.search).get('mesa')||localStorage.getItem('mesa')||'';
-let carrinho=JSON.parse(localStorage.getItem('carrinho')||'[]');
-let catAtual='todos',produtoAberto=null,pedidos=[];
-
-if(mesa){localStorage.setItem('mesa',mesa);document.getElementById('mesaBadge').textContent='MESA '+String(mesa).padStart(2,'0');document.getElementById('sacolaMesa').textContent=mesa;}
-
-if(mesa){
-db.collection('pedidos').where('mesa','==',String(mesa)).onSnapshot(s=>{
-pedidos=s.docs.map(d=>d.data());
-renderTracking();
-});
-}
-
-function filtrarCat(c){catAtual=c;document.querySelectorAll('.catBtn').forEach(b=>{b.classList.remove('bg-black','text-white');b.classList.add('bg-white','border-2','border-black','text-black');});let btn=document.getElementById('btn-'+c);if(btn){btn.classList.remove('bg-white','text-black');btn.classList.add('bg-black','text-white');}renderProdutos();}
-function renderProdutos(){
-let busca=(document.getElementById('busca').value||'').toLowerCase();
-let lista=PRODUTOS.filter(p=>(catAtual=='todos'||p.cat==catAtual) && (!busca || p.nome.toLowerCase().includes(busca) || p.desc.toLowerCase().includes(busca)));
-document.getElementById('gridProdutos').innerHTML=lista.map(p=>`<div onclick="openProd(${p.id})" class="bg-white border border-zinc-200 rounded-[20px] overflow-hidden cursor-pointer hover:border-black transition"><div class="flex gap-3 p-3"><img src="${p.foto}" class="w-[88px] h-[88px] rounded-xl object-cover bg-zinc-100"><div class="flex-1 min-w-0"><p class="font-black text-sm leading-tight">${p.nome.toUpperCase()}</p><p class="text-[11px] text-zinc-500 mt-1 leading-tight">${p.desc}</p><div class="mt-2 flex justify-between items-center"><p class="font-black text-sm">R$ ${p.preco.toFixed(2)}</p><span class="bg-[#FFCC00] border-2 border-black px-3 py-1 rounded-full text-[10px] font-black">+ ADD</span></div></div></div></div>`).join('');
-}
-function openProd(id){produtoAberto=PRODUTOS.find(p=>p.id==id);let extrasHtml=EXTRAS.map((e,i)=>`<label class="flex justify-between items-center bg-[#F6F6F7] border p-3 rounded-xl cursor-pointer"><span class="text-sm font-bold flex items-center gap-2"><input type="checkbox" data-i="${i}" class="chkExtra accent-black"> ${e.nome}</span><span class="text-xs font-bold">${e.preco>0?'+ R$ '+e.preco.toFixed(2):'Grátis'}</span></label>`).join('');document.getElementById('modalProdContent').innerHTML=`<img src="${produtoAberto.foto}" class="w-full h-[220px] object-cover"><div class="p-5 overflow-auto"><p class="font-black text-xl">${produtoAberto.nome.toUpperCase()}</p><p class="text-sm text-zinc-500 mt-1">${produtoAberto.desc}</p><p class="font-black text-lg mt-2">R$ ${produtoAberto.preco.toFixed(2)}</p><div class="mt-4"><p class="font-black text-xs">ADICIONAIS</p><div class="mt-2 grid gap-2">${extrasHtml}</div></div><textarea id="obsItem" placeholder="Obs desse item (ex: sem tomate, bem passado)" class="mt-4 w-full bg-[#F6F6F7] border p-3 rounded-xl text-sm h-20 outline-none"></textarea><div class="mt-4 flex gap-3"><button onclick="closeProd()" class="flex-1 bg-zinc-100 py-4 rounded-full font-bold text-sm">Cancelar</button><button onclick="addToCart()" class="flex-1 bg-black text-[#FFCC00] py-4 rounded-full font-black text-sm">ADICIONAR • R$ <span id="precoModal">${produtoAberto.preco.toFixed(2)}</span></button></div></div>`;document.getElementById('modalProd').classList.remove('hidden');document.querySelectorAll('.chkExtra').forEach(c=>c.addEventListener('change',calcModal));}
-function calcModal(){let total=produtoAberto.preco;document.querySelectorAll('.chkExtra:checked').forEach(ch=>{total+=EXTRAS[parseInt(ch.dataset.i)].preco;});document.getElementById('precoModal').textContent=total.toFixed(2);}
-function closeProd(){document.getElementById('modalProd').classList.add('hidden');produtoAberto=null;}
-function addToCart(){if(!produtoAberto)return;let extras=[];let preco=produtoAberto.preco;document.querySelectorAll('.chkExtra:checked').forEach(ch=>{let ex=EXTRAS[parseInt(ch.dataset.i)];extras.push(ex);preco+=ex.preco;});let obs=document.getElementById('obsItem').value.trim();let item={uid:Date.now().toString(),base:produtoAberto.nome,preco,foto:produtoAberto.foto,extras,obsItem:obs};carrinho.push(item);localStorage.setItem('carrinho',JSON.stringify(carrinho));closeProd();renderCarrinho();}
-function renderCarrinho(){
-document.getElementById('cartCount').textContent=carrinho.length;
-let total=carrinho.reduce((s,i)=>s+i.preco,0);
-document.getElementById('cartTotal').textContent=total.toFixed(2).replace('.',',');
-document.getElementById('checkoutTotal').textContent='R$ '+total.toFixed(2);
-document.getElementById('cartList').innerHTML=carrinho.map((it,idx)=>`<div class="bg-[#F6F6F7] border rounded-xl p-3 flex gap-3"><img src="${it.foto}" class="w-12 h-12 rounded-lg object-cover"><div class="flex-1 min-w-0"><p class="font-black text-xs truncate">${it.base.toUpperCase()}</p><p class="text-[10px] text-zinc-500">${it.extras.length? '+ '+it.extras.map(e=>e.nome).join(', '):'Sem adicionais'}${it.obsItem? ' • Obs: '+it.obsItem:''}</p><p class="font-bold text-xs mt-1">R$ ${it.preco.toFixed(2)}</p></div><button onclick="removerItem(${idx})" class="text-[11px] bg-white border w-7 h-7 rounded-full">✕</button></div>`).join('')||'<p class="text-center text-zinc-400 text-xs py-6">Sacola vazia<br>Toque em + ADD nos produtos</p>';
-validarCheckout();
-}
-function removerItem(i){carrinho.splice(i,1);localStorage.setItem('carrinho',JSON.stringify(carrinho));renderCarrinho();}
-function openCart(){document.getElementById('sacolaMesa').scrollIntoView({behavior:'smooth'});}
-function validarCheckout(){
-let nome=document.getElementById('cliNome').value.trim();
-let whats=document.getElementById('cliWhats').value.replace(/\D/g,'');
-let total=carrinho.reduce((s,i)=>s+i.preco,0);
-let btn=document.getElementById('btnEnviar');
-if(!mesa){btn.disabled=true;btn.textContent='ESCANEIE O QR DA MESA';btn.className='w-full bg-red-500 text-white py-4 rounded-full font-black text-sm';return;}
-if(carrinho.length==0){btn.disabled=true;btn.textContent='SACOLA VAZIA';btn.className='w-full bg-zinc-300 text-zinc-500 py-4 rounded-full font-black text-sm';return;}
-if(nome.length<2 || whats.length<10){btn.disabled=true;btn.textContent='PREENCHA NOME E WHATS';btn.className='w-full bg-zinc-300 text-zinc-500 py-4 rounded-full font-black text-sm';return;}
-btn.disabled=false;btn.textContent=`ENVIAR PEDIDO • R$ ${total.toFixed(2)} • MESA ${mesa}`;btn.className='w-full bg-[#FFCC00] text-black border-2 border-black py-4 rounded-full font-black text-sm';
-}
-
-async function enviarPedido(){
-if(!mesa){alert('Escaneie o QR da mesa!');return;}
-let nome=document.getElementById('cliNome').value.trim();
-let whats=document.getElementById('cliWhats').value.replace(/\D/g,'');
-let obsGeral=document.getElementById('obsGeral').value.trim();
-if(carrinho.length==0||nome.length<2||whats.length<10)return;
-let id=Date.now().toString();
-let pedido={id,mesa:String(mesa),cliente:nome,whats,obs:obsGeral,itens:carrinho,total:carrinho.reduce((s,i)=>s+i.preco,0),status:'novo',hora:Date.now()};
-try{
-await db.collection('pedidos').doc(id).set(pedido);
-carrinho=[];localStorage.setItem('carrinho','[]');renderCarrinho();
-document.getElementById('obsGeral').value='';
-alert('✅ PEDIDO ENVIADO MESA '+mesa+'! A cozinha vai informar o tempo em instantes. Acompanhe no topo da página!');
-window.scrollTo({top:0,behavior:'smooth'});
-}catch(e){alert('Erro ao enviar: '+e.message);}
-}
-
+const extras=[{nome:'Bacon Extra',preco:6},{nome:'Cheddar Extra',preco:5},{nome:'Ovo Frito',preco:4},{nome:'Cebola Caramelizada',preco:3},{nome:'Molho da Casa',preco:2},{nome:'Picles Extra',preco:2}];
+if(mesa){mesa=mesa.replace(/\D/g,'');localStorage.setItem('mesa',mesa);document.getElementById('mesaBadge').classList.remove('hidden');document.getElementById('mesaNum').textContent=mesa;document.getElementById('heroMesa').classList.remove('hidden');document.getElementById('heroMesaNum').textContent=mesa;document.getElementById('sacolaMesa').textContent=mesa;document.getElementById('modalMesa').textContent=mesa;}
+window.filtrar=(cat)=>{filtro=cat;document.querySelectorAll('[id^=f-]').forEach(b=>b.className='bg-white/10 px-5 py-2 rounded-full text-xs font-bold');document.getElementById('f-'+cat).className='bg-yellow-400 text-black px-5 py-2 rounded-full text-xs font-black';renderMenu();};
+function renderMenu(){let lista=filtro=='todos'?cardapio:cardapio.filter(c=>c.cat==filtro);document.getElementById('grid').innerHTML=lista.map((c)=>{let i=cardapio.indexOf(c);return `<div onclick="openM(${i})" class="bg-[#161616] rounded-[22px] overflow-hidden cursor-pointer border border-white/5"><img src="${c.foto}" class="w-full h-[130px] md:h-[180px] object-cover"><div class="p-3 md:p-5"><h3 class="bebas text-[16px] md:text-xl">${c.nome}</h3><p class="text-[11px] text-white/40">${c.desc}</p><p class="font-black mt-2">R$ ${c.preco.toFixed(2)}</p></div></div>`}).join('');}
+window.openM=(i)=>{detalhe=cardapio[i];adds=[];document.getElementById('mFoto').src=detalhe.foto;document.getElementById('mNome').textContent=detalhe.nome;document.getElementById('mDesc').textContent=detalhe.desc;document.getElementById('mPrecoBase').textContent='R$ '+detalhe.preco.toFixed(2);document.getElementById('mAdds').innerHTML=extras.map((e,j)=>`<label class="flex justify-between bg-white/5 p-3 rounded-xl text-sm"><span><input type="checkbox" onchange="toggleA(${j})"> ${e.nome}</span><span class="text-yellow-400">+R$ ${e.preco}</span></label>`).join('');calc();document.getElementById('modalLanche').classList.remove('hidden');}
+window.toggleA=(j)=>{let e=extras[j];if(adds.find(x=>x.nome==e.nome))adds=adds.filter(x=>x.nome!=e.nome);else adds.push(e);calc();};
+function calc(){document.getElementById('mTotal').textContent='R$ '+(detalhe.preco+adds.reduce((s,a)=>s+a.preco,0)).toFixed(2);}
+window.closeModal=()=>document.getElementById('modalLanche').classList.add('hidden');
+document.getElementById('mAdd').onclick=()=>{if(!mesa){alert('Escaneie QR da mesa');return;}let total=detalhe.preco+adds.reduce((s,a)=>s+a.preco,0);carrinho.push({base:detalhe.nome,foto:detalhe.foto,preco:total,extras:[...adds]});updateCart();closeModal();};
+function updateCart(){let total=carrinho.reduce((s,c)=>s+c.preco,0);document.getElementById('sacolaTotal').textContent=`R$ ${total.toFixed(2)} • ${carrinho.length} itens`;document.getElementById('total').textContent='R$ '+total.toFixed(2);document.getElementById('carrinho').innerHTML=carrinho.map((c,i)=>`<div class="flex gap-2 bg-zinc-50 p-3 rounded-2xl mb-2"><img src="${c.foto}" class="w-12 h-12 rounded-xl object-cover"><div class="flex-1"><p class="font-black text-xs">${c.base}</p><p class="text-[10px] text-zinc-500">${c.extras.map(e=>e.nome).join(', ')}</p></div><button onclick="carrinho.splice(${i},1);updateCart()">✕</button></div>`).join('')||'<p class="text-center py-10 text-zinc-400">Sacola vazia</p>';}
+document.getElementById('btnVerSacola').onclick=()=>document.getElementById('modalSacola').classList.remove('hidden');window.closeSacola=()=>document.getElementById('modalSacola').classList.add('hidden');
+document.getElementById('btnPedir').onclick=async()=>{let nome=document.getElementById('nome').value.trim(),whats=document.getElementById('whats').value.trim();if(!nome||!whats)return alert('Nome e WhatsApp obrigatórios');if(carrinho.length==0)return alert('Sacola vazia');let total=carrinho.reduce((s,c)=>s+c.preco,0);let pedido={id:Date.now().toString(),mesa,cliente:nome,whats,obs:document.getElementById('obs').value,itens:[...carrinho],total,status:'novo',hora:Date.now()};await db.collection('pedidos').doc(pedido.id).set(pedido);carrinho=[];updateCart();closeSacola();alert('✅ Pedido enviado! Mesa '+mesa+' - Aguarde tempo estimado da cozinha');};
+if(mesa){db.collection('pedidos').where('mesa','==',String(mesa)).onSnapshot(s=>{pedidos=s.docs.map(d=>d.data());renderTracking();});}
 function renderTracking(){
 if(!mesa)return;
 let meus=pedidos.filter(p=>p.status!='entregue');
 let wrap=document.getElementById('trackingWrap');
 if(meus.length==0){wrap.classList.add('hidden');return;}
 wrap.classList.remove('hidden');
-document.getElementById('trackMesa').textContent=String(mesa).padStart(2,'0');
+document.getElementById('trackMesa').textContent=mesa;
 document.getElementById('trackList').innerHTML=meus.map(o=>{
 let step=o.status=='novo'?1:o.status=='preparo'?2:3;
-let tempoTxt='';
+let tempoHtml='';
 if(o.status=='novo'){
-tempoTxt='<p class="mt-2 text-[11px] bg-white/10 text-white/70 p-2 rounded-xl text-center">⏳ Aguardando cozinha definir tempo...</p>';
+tempoHtml=`<div class="mt-2 bg-white/5 border border-white/10 p-2.5 rounded-xl text-center"><p class="text-[11px] text-white/60 font-bold">⏳ Aguardando cozinha definir tempo...</p></div>`;
 }else if(o.status=='preparo' && o.tempoEstimado){
 let restante=Math.max(0,Math.ceil((o.previsaoPronto - Date.now())/60000));
 if(restante>0){
-tempoTxt=`<div class="mt-2 bg-[#FFCC00] text-black p-2.5 rounded-xl flex justify-between items-center"><p class="font-black text-xs">⏱️ TEMPO: ${o.tempoEstimado} MIN</p><p class="font-black text-sm">${restante} MIN RESTANTES</p></div><div class="mt-2 bg-white/10 rounded-full h-2 overflow-hidden"><div class="h-2 bg-[#FFCC00]" style="width:${Math.max(5,100 - (restante/o.tempoEstimado*100))}%"></div></div>`;
+tempoHtml=`<div class="mt-2 bg-yellow-400 text-black p-2.5 rounded-xl flex justify-between items-center"><p class="font-black text-[11px]">⏱️ TEMPO: ${o.tempoEstimado} MIN</p><p class="font-black text-sm">${restante} MIN RESTANTES</p></div><div class="mt-2 bg-white/10 rounded-full h-2 overflow-hidden"><div class="h-2 bg-yellow-400" style="width:${Math.max(5,100 - (restante/o.tempoEstimado*100))}%"></div></div>`;
 }else{
-tempoTxt='<div class="mt-2 bg-red-500 text-white p-2.5 rounded-xl text-center font-black text-xs animate-pulse">⏰ QUASE PRONTO! Finalizando...</div>';
+tempoHtml=`<div class="mt-2 bg-red-500 text-white p-2.5 rounded-xl text-center font-black text-xs animate-pulse">⏰ QUASE PRONTO! Finalizando...</div>`;
 }
 }else if(o.status=='pronto'){
-tempoTxt='<p class="mt-2 bg-green-500 text-white p-2.5 rounded-xl text-center font-black text-xs animate-pulse">✅ PRONTO! RETIRE NO BALCÃO MESA '+o.mesa+'</p>';
+tempoHtml=`<p class="mt-2 bg-green-600 text-white p-2.5 rounded-xl text-center font-black text-xs animate-pulse">✅ PRONTO! RETIRE NO BALCÃO MESA ${o.mesa}</p>`;
 }
-return `<div class="bg-white text-black rounded-[16px] p-3"><div class="flex justify-between"><p class="font-black text-xs">#${o.id.slice(-4)} • R$ ${Number(o.total).toFixed(2)} • ${o.itens.length}x</p><p class="text-[10px] ${o.status=='novo'?'bg-blue-500':o.status=='preparo'?'bg-orange-500':'bg-green-600'} text-white px-2 py-1 rounded-full font-bold">${o.status.toUpperCase()}${o.tempoEstimado?' • '+o.tempoEstimado+'MIN':''}</p></div><div class="flex gap-2 mt-2"><div class="flex-1 h-1.5 bg-zinc-200 rounded-full ${step>=1?'!bg-yellow-400':''}"></div><div class="flex-1 h-1.5 bg-zinc-200 rounded-full ${step>=2?'!bg-orange-400':''}"></div><div class="flex-1 h-1.5 bg-zinc-200 rounded-full ${step>=3?'!bg-green-500':''}"></div></div>${tempoTxt}</div>`;
+return `<div class="bg-white text-black rounded-[16px] p-3"><div class="flex justify-between"><p class="font-black text-xs">#${o.id.slice(-4)} • R$ ${o.total.toFixed(2)} ${o.tempoEstimado?'• ⏱️ '+o.tempoEstimado+'MIN':''}</p><p class="text-[10px] bg-black text-white px-2 py-1 rounded-full">${o.status.toUpperCase()}</p></div><div class="flex gap-2 mt-2"><div class="flex-1 h-1.5 bg-zinc-200 rounded-full ${step>=1?'!bg-yellow-400':''}"></div><div class="flex-1 h-1.5 bg-zinc-200 rounded-full ${step>=2?'!bg-orange-400':''}"></div><div class="flex-1 h-1.5 bg-zinc-200 rounded-full ${step>=3?'!bg-green-500':''}"></div></div>${tempoHtml}</div>`;
 }).join('');
 }
 setInterval(()=>{if(pedidos.length) renderTracking();},10000);
-
-renderProdutos();renderCarrinho();
-</script>
-</body>
-</html>
+renderMenu();updateCart();
+let clicks=0;document.getElementById('logoAdmin').onclick=()=>{clicks++;if(clicks>=5){clicks=0;let s=prompt('Senha admin:');if(s=='1234')location.href='./admin/';else alert('Senha errada');}setTimeout(()=>clicks=0,3000);};
+</script></body></html>
