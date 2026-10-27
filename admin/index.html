@@ -11,16 +11,14 @@
 </head>
 <body class="bg-[#F6F6F7] text-[#111]">
 <header class="sticky top-0 z-20 bg-white border-b border-zinc-200 px-5 py-3 flex justify-between items-center">
-<div class="flex items-center gap-3"><div class="w-9 h-9 bg-black text-[#FFCC00] rounded-xl grid place-items-center font-black">BH</div><div><p class="font-extrabold leading-none">Burger House</p><p class="text-[11px] text-zinc-500">Admin • Tempo + Histórico + QR Salvo + Reinicia Mesa</p></div><span id="kdsCount" class="ml-4 bg-zinc-900 text-white px-3 py-1 rounded-full text-xs font-bold">0 ativos</span></div>
+<div class="flex items-center gap-3"><div class="w-9 h-9 bg-black text-[#FFCC00] rounded-xl grid place-items-center font-black">BH</div><div><p class="font-extrabold leading-none">Burger House</p><p class="text-[11px] text-zinc-500">Admin • FIFO + Ingredientes + Sem Zap Final</p></div><span id="kdsCount" class="ml-4 bg-zinc-900 text-white px-3 py-1 rounded-full text-xs font-bold">0 ativos</span></div>
 <div class="flex items-center gap-2 flex-wrap">
-<label class="flex items-center gap-2 text-[11px] bg-zinc-100 px-3 py-2 rounded-full font-bold"><input id="zapAuto" type="checkbox" checked> Zap Auto</label>
 <input id="buscaMesa" placeholder="🔍 Mesa..." class="bg-[#F6F6F7] border px-4 py-2 rounded-full text-xs w-28 outline-none" oninput="renderKDS()">
 <button onclick="openHistorico()" class="bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold">📚 Hist (<span id="histCount">0</span>)</button>
 <button onclick="openQR()" class="bg-zinc-900 text-white px-4 py-2 rounded-full text-xs font-bold">QR Mesas</button>
 <button onclick="limparEntregues()" class="bg-red-50 text-red-600 border px-3 py-2 rounded-full text-xs font-bold">🗑️ Limpar prontos</button>
 </div>
 </header>
-
 <div class="max-w-[1500px] mx-auto p-5 grid grid-cols-2 md:grid-cols-5 gap-4">
 <div class="bg-white rounded-[20px] border p-5"><p class="text-[11px] text-zinc-500 font-semibold">💰 Faturamento Hoje</p><p id="fatDia" class="font-extrabold text-2xl mt-1">R$ 0,00</p></div>
 <div class="bg-white rounded-[20px] border p-5"><p class="text-[11px] text-zinc-500 font-semibold">📦 Pedidos Hoje</p><p id="pedHoje" class="font-extrabold text-2xl mt-1">0</p><p id="ticketMed" class="text-[11px] text-zinc-400 mt-1">Ticket R$ 0,00</p></div>
@@ -28,58 +26,25 @@
 <div class="bg-white rounded-[20px] border p-5"><p class="text-[11px] text-zinc-500 font-semibold">⏱️ Tempo Médio</p><p id="tempoMedio" class="font-extrabold text-2xl mt-1">0m</p></div>
 <div class="bg-blue-50 border border-blue-200 rounded-[20px] p-5"><p class="text-[11px] text-blue-600 font-semibold">📚 Histórico Total</p><p id="fatHist" class="font-extrabold text-xl mt-1 text-blue-700">R$ 0,00</p><p id="qtdHist" class="text-[11px] text-blue-500">0 atendimentos</p></div>
 </div>
-
 <div class="max-w-[1500px] mx-auto px-5 pb-24 grid md:grid-cols-3 gap-5 items-start">
-<div class="bg-white rounded-[24px] border"><div class="p-5 flex justify-between border-b"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 bg-blue-500 rounded-full"></span><p class="font-extrabold text-sm">Recebidos</p><span id="cNovos" class="bg-blue-500 text-white px-2.5 py-0.5 rounded-full text-[11px] font-bold">0</span></div></div><div id="colNovos" class="p-3 grid gap-3"></div></div>
+<div class="bg-white rounded-[24px] border"><div class="p-5 flex justify-between border-b"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 bg-blue-500 rounded-full"></span><p class="font-extrabold text-sm">Recebidos - FIFO</p><span id="cNovos" class="bg-blue-500 text-white px-2.5 py-0.5 rounded-full text-[11px] font-bold">0</span></div></div><div id="colNovos" class="p-3 grid gap-3"></div></div>
 <div class="bg-white rounded-[24px] border"><div class="p-5 flex justify-between border-b"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 bg-orange-500 rounded-full animate-pulse"></span><p class="font-extrabold text-sm">Em Preparo</p><span id="cPreparo" class="bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[11px] font-bold">0</span></div></div><div id="colPreparo" class="p-3 grid gap-3"></div></div>
 <div class="bg-white rounded-[24px] border"><div class="p-5 flex justify-between border-b"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span><p class="font-extrabold text-sm">Pronto</p><span id="cPronto" class="bg-green-500 text-white px-2.5 py-0.5 rounded-full text-[11px] font-bold">0</span></div></div><div id="colPronto" class="p-3 grid gap-3"></div></div>
 </div>
-
-<div id="modalDetalhe" class="hidden fixed inset-0 bg-black/40 backdrop-blur z-[100] flex items-center justify-center p-4"><div class="bg-white rounded-[28px] w-full max-w-[680px] max-h-[92vh] overflow-auto border"><div id="detalheContent"></div></div></div>
-<div id="modalFinalizar" class="hidden fixed inset-0 bg-black/40 backdrop-blur z-[110] flex items-center justify-center p-4"><div class="bg-white rounded-[28px] w-full max-w-[400px] p-6 border"><h3 class="font-extrabold text-xl">Finalizar Pedido?</h3><p id="finalizarInfo" class="text-sm text-zinc-500 mt-2"></p><div class="mt-5 grid gap-2"><button onclick="finalizarPedido('balcao')" class="w-full bg-zinc-900 text-white py-4 rounded-full font-bold">📢 RETIRADA NO BALCÃO</button><button onclick="finalizarPedido('mesa')" class="w-full bg-[#FFCC00] text-black py-4 rounded-full font-bold">🍽️ ENTREGAR NA MESA</button><button onclick="finalizarPedido('entregue')" class="w-full bg-white border py-4 rounded-full font-bold">✅ SÓ MARCAR ENTREGUE</button><label class="mt-2 flex items-center gap-2 text-xs bg-zinc-50 border p-3 rounded-xl"><input id="enviarZapFinal" type="checkbox" checked> Enviar WhatsApp?</label><button onclick="closeFinalizar()" class="w-full mt-2 bg-zinc-100 py-3 rounded-full text-xs font-bold">Cancelar</button></div></div></div>
-
-<div id="panelHistorico" class="hidden fixed inset-0 bg-[#F6F6F7] z-[95] p-6 overflow-auto">
-<div class="max-w-6xl mx-auto">
-<div class="flex justify-between items-center"><div><h2 class="font-extrabold text-2xl">📚 Histórico de Atendimentos</h2><p class="text-xs text-zinc-500">Salvo pra sempre - mesa reinicia automático</p></div><div class="flex gap-2"><button onclick="exportarHistorico()" class="bg-white border px-4 py-2 rounded-full text-xs font-bold">📤 CSV</button><button onclick="limparHistorico()" class="bg-red-50 text-red-600 border px-4 py-2 rounded-full text-xs font-bold">🗑️ Limpar</button><button onclick="closeHistorico()" class="bg-black text-white w-10 h-10 rounded-full font-bold">✕</button></div></div>
-<div class="mt-6 bg-white p-4 rounded-[20px] border flex gap-3 flex-wrap"><input id="buscaHist" placeholder="🔍 Buscar..." class="flex-1 min-w-[200px] bg-zinc-50 border p-3 rounded-xl text-sm outline-none" oninput="renderHistorico()"><input id="filtroDataHist" type="date" class="bg-zinc-50 border p-3 rounded-xl text-sm" onchange="renderHistorico()"><select id="filtroStatusHist" class="bg-zinc-50 border p-3 rounded-xl text-sm" onchange="renderHistorico()"><option value="todos">Todos</option><option value="balcao">Balcão</option><option value="mesa">Mesa</option><option value="entregue">Entregue</option><option value="apagado">Apagado</option><option value="mesa_liberada">Mesa Liberada</option><option value="mesa_reiniciada">Mesa Reiniciada</option></select></div>
-<div id="gridHistorico" class="mt-6 grid gap-3"></div>
-</div>
-</div>
-
-<div id="qrPanel" class="hidden fixed inset-0 bg-[#F6F6F7] z-[90] p-6 overflow-auto">
-<div class="max-w-7xl mx-auto">
-<div class="flex justify-between items-center"><div><h2 class="font-extrabold text-2xl">QR Codes - SALVO AUTOMÁTICO</h2><p class="text-xs text-zinc-500 mt-1">✅ Não precisa cadastrar toda hora • Amarelo</p></div><button onclick="closeQR()" class="bg-black text-white w-11 h-11 rounded-full font-bold">✕</button></div>
-<div class="mt-6 bg-white p-5 rounded-[20px] border">
-<p class="font-bold text-sm">🔗 Link Base Salvo Automaticamente</p>
-<div class="mt-3 grid md:grid-cols-4 gap-3">
-<input id="baseLink" placeholder="https://seusite.com/" class="bg-zinc-50 border p-3 rounded-xl text-sm outline-none col-span-2">
-<input id="qtdMesas" type="number" value="12" min="1" max="100" class="bg-zinc-50 border p-3 rounded-xl text-sm">
-<button onclick="gerarQRS()" class="bg-[#FFCC00] text-black py-3 rounded-full font-bold">GERAR QR AMARELO</button>
-</div>
-<div class="mt-3 flex gap-2 flex-wrap">
-<button onclick="salvarLink()" class="bg-green-600 text-white px-4 py-2 rounded-full text-xs font-bold">💾 SALVAR LINK</button>
-<button onclick="imprimirTodos()" class="bg-zinc-900 text-white px-6 py-3 rounded-full text-xs font-bold">🖨️ IMPRIMIR A4</button>
-<button onclick="baixarLinks()" class="bg-white border px-6 py-3 rounded-full text-xs font-bold">📋 COPIAR LINKS</button>
-</div>
-<div id="linksSalvos" class="mt-4 grid gap-2"></div>
-</div>
-<div id="qrGrid" class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
-</div>
-</div>
-
+<div id="modalDetalhe" class="hidden fixed inset-0 bg-black/40 backdrop-blur z-[100] flex items-center justify-center p-4"><div class="bg-white rounded-[28px] w-full max-w-[720px] max-h-[92vh] overflow-auto border"><div id="detalheContent"></div></div></div>
+<div id="modalFinalizar" class="hidden fixed inset-0 bg-black/40 backdrop-blur z-[110] flex items-center justify-center p-4"><div class="bg-white rounded-[28px] w-full max-w-[400px] p-6 border"><h3 class="font-extrabold text-xl">Finalizar Pedido?</h3><p id="finalizarInfo" class="text-sm text-zinc-500 mt-2"></p><div class="mt-5 grid gap-2"><button onclick="finalizarPedido('balcao')" class="w-full bg-zinc-900 text-white py-4 rounded-full font-bold">📢 RETIRADA NO BALCÃO</button><button onclick="finalizarPedido('mesa')" class="w-full bg-[#FFCC00] text-black py-4 rounded-full font-bold">🍽️ ENTREGAR NA MESA</button><button onclick="finalizarPedido('entregue')" class="w-full bg-white border py-4 rounded-full font-bold">✅ SÓ MARCAR ENTREGUE</button><button onclick="closeFinalizar()" class="w-full mt-2 bg-zinc-100 py-3 rounded-full text-xs font-bold">Cancelar</button></div></div></div>
+<div id="panelHistorico" class="hidden fixed inset-0 bg-[#F6F6F7] z-[95] p-6 overflow-auto"><div class="max-w-6xl mx-auto"><div class="flex justify-between items-center"><div><h2 class="font-extrabold text-2xl">📚 Histórico</h2><p class="text-xs text-zinc-500">Salvo pra sempre - mesa reinicia automático</p></div><div class="flex gap-2"><button onclick="exportarHistorico()" class="bg-white border px-4 py-2 rounded-full text-xs font-bold">📤 CSV</button><button onclick="limparHistorico()" class="bg-red-50 text-red-600 border px-4 py-2 rounded-full text-xs font-bold">🗑️ Limpar</button><button onclick="closeHistorico()" class="bg-black text-white w-10 h-10 rounded-full font-bold">✕</button></div></div><div class="mt-6 bg-white p-4 rounded-[20px] border flex gap-3 flex-wrap"><input id="buscaHist" placeholder="🔍 Buscar..." class="flex-1 min-w-[200px] bg-zinc-50 border p-3 rounded-xl text-sm outline-none" oninput="renderHistorico()"><input id="filtroDataHist" type="date" class="bg-zinc-50 border p-3 rounded-xl text-sm" onchange="renderHistorico()"><select id="filtroStatusHist" class="bg-zinc-50 border p-3 rounded-xl text-sm" onchange="renderHistorico()"><option value="todos">Todos</option><option value="balcao">Balcão</option><option value="mesa">Mesa</option><option value="entregue">Entregue</option><option value="apagado">Apagado</option><option value="mesa_liberada">Mesa Liberada</option><option value="mesa_reiniciada">Mesa Reiniciada</option></select></div><div id="gridHistorico" class="mt-6 grid gap-3"></div></div></div>
+<div id="qrPanel" class="hidden fixed inset-0 bg-[#F6F6F7] z-[90] p-6 overflow-auto"><div class="max-w-7xl mx-auto"><div class="flex justify-between items-center"><div><h2 class="font-extrabold text-2xl">QR Codes - SALVO AUTOMÁTICO</h2><p class="text-xs text-zinc-500 mt-1">✅ Não precisa cadastrar toda hora • Amarelo</p></div><button onclick="closeQR()" class="bg-black text-white w-11 h-11 rounded-full font-bold">✕</button></div><div class="mt-6 bg-white p-5 rounded-[20px] border"><p class="font-bold text-sm">🔗 Link Base Salvo Automaticamente</p><div class="mt-3 grid md:grid-cols-4 gap-3"><input id="baseLink" placeholder="https://seusite.com/" class="bg-zinc-50 border p-3 rounded-xl text-sm outline-none col-span-2"><input id="qtdMesas" type="number" value="12" min="1" max="100" class="bg-zinc-50 border p-3 rounded-xl text-sm"><button onclick="gerarQRS()" class="bg-[#FFCC00] text-black py-3 rounded-full font-bold">GERAR QR AMARELO</button></div><div class="mt-3 flex gap-2 flex-wrap"><button onclick="salvarLink()" class="bg-green-600 text-white px-4 py-2 rounded-full text-xs font-bold">💾 SALVAR LINK</button><button onclick="imprimirTodos()" class="bg-zinc-900 text-white px-6 py-3 rounded-full text-xs font-bold">🖨️ IMPRIMIR A4</button><button onclick="baixarLinks()" class="bg-white border px-6 py-3 rounded-full text-xs font-bold">📋 COPIAR LINKS</button></div><div id="linksSalvos" class="mt-4 grid gap-2"></div></div><div id="qrGrid" class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4"></div></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDfnlWLGHySS42WMOcve1qP-dSH3cF-J50",authDomain:"cardapiobr-be645.firebaseapp.com",projectId:"cardapiobr-be645",storageBucket:"cardapiobr-be645.firebasestorage.app",messagingSenderId:"1013095361613",appId:"1:1013095361613:web:31d58aa9ebda0135110004"};
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore();
 let pedidos=[],pedidoFinalizar=null,historico=[];
-
 if(prompt('🔒 Senha admin (1234)')!=='1234'){document.body.innerHTML='<div class="p-10 font-black">ACESSO NEGADO</div>'; throw new Error();}
-
 db.collection('pedidos').onSnapshot(s=>{
-  pedidos=s.docs.map(d=>d.data()).sort((a,b)=>(b.hora||0)-(a.hora||0));
+  pedidos=s.docs.map(d=>d.data()).sort((a,b)=>(a.hora||0)-(b.hora||0));
   renderKDS();
-}, e=>{ console.error(e); });
-
+});
 db.collection('historico').onSnapshot(s=>{
   historico=s.docs.map(d=>d.data()).sort((a,b)=>(b.horaFim||0)-(a.horaFim||0)).slice(0,300);
   document.getElementById('histCount').textContent=historico.length;
@@ -88,7 +53,6 @@ db.collection('historico').onSnapshot(s=>{
   document.getElementById('qtdHist').textContent=historico.length+' registros';
   if(!document.getElementById('panelHistorico').classList.contains('hidden')) renderHistorico();
 });
-
 function renderKDS(){
 let busca=(document.getElementById('buscaMesa').value||'').toLowerCase();
 let colN=document.getElementById('colNovos'),colP=document.getElementById('colPreparo'),colPr=document.getElementById('colPronto');
@@ -98,8 +62,8 @@ pedidos.forEach(o=>{
 if(busca && !(o.mesa.toString().includes(busca) || o.cliente.toLowerCase().includes(busca) || o.id.toLowerCase().includes(busca))) return;
 fat+=Number(o.total||0);mesasSet.add(o.mesa);let mins=Math.floor(((Date.now()-(o.hora||Date.now()))/60000));tempoTotal+=mins;
 let itensPreview=o.itens.map(it=>{
-let extrasTxt=it.extras&&it.extras.length?`<span class="text-[9px] text-orange-600 font-bold"> + ${it.extras.map(e=>e.nome).join(', ')}</span>`:'';
-return `<div class="flex gap-2 items-center bg-white border rounded-xl p-2 mt-1.5"><img src="${it.foto}" class="w-9 h-9 rounded-lg object-cover"><div class="flex-1 leading-tight"><p class="font-bold text-[11px] truncate">${it.base.toUpperCase()}${extrasTxt}</p><p class="text-[9px] text-zinc-500">R$ ${Number(it.preco).toFixed(2)}</p></div></div>`;
+let ingTxt=it.ingredientes&&it.ingredientes.length?`<div class="mt-1 bg-zinc-50 border rounded-lg p-2"><p class="text-[8px] font-black text-zinc-400">📋 INGREDIENTES BASE:</p><p class="text-[9px] text-zinc-600 leading-tight">${it.ingredientes.join(' • ')}</p>${it.extras&&it.extras.length?`<p class="text-[9px] text-orange-600 font-bold mt-1">➕ ADICIONAIS: ${it.extras.map(e=>e.nome).join(', ')}</p>`:''}</div>`:'';
+return `<div class="bg-white border rounded-xl p-2 mt-1.5"><div class="flex gap-2 items-center"><img src="${it.foto}" class="w-9 h-9 rounded-lg object-cover"><div class="flex-1"><p class="font-bold text-[11px]">${it.base.toUpperCase()}</p><p class="text-[9px] text-zinc-500">R$ ${Number(it.preco).toFixed(2)}</p></div></div>${ingTxt}</div>`;
 }).join('');
 let obsPreview=o.obs?`<div class="mt-2.5 bg-red-50 border border-red-200 text-red-700 rounded-xl p-2.5"><p class="text-[9px] font-black">⚠️ OBS MESA ${o.mesa}:</p><p class="text-[11px] font-bold">"${o.obs}"</p></div>`:'';
 let tempoInfo='';
@@ -110,7 +74,7 @@ tempoInfo=`<div class="mt-2 ${corTempo} text-white rounded-xl p-2.5 flex justify
 }else if(o.status=='novo'){
 tempoInfo=`<div class="mt-2 bg-zinc-100 border rounded-xl p-2 text-center"><p class="text-[10px] text-zinc-500 font-bold">⏱️ DEFINA O TEMPO AO INICIAR</p></div>`;
 }
-let card=`<div onclick="abrirDetalhe('${o.id}')" class="bg-[#FAFAFA] hover:bg-white border rounded-[18px] p-4 cursor-pointer shadow-sm"><div class="flex justify-between gap-2"><div class="flex-1 min-w-0"><p class="font-extrabold text-[13px] truncate">MESA ${o.mesa} • ${o.cliente.toUpperCase()}</p><p class="text-[11px] text-zinc-500">#${o.id.slice(-6)} • ${mins} min • R$ ${Number(o.total).toFixed(2)} • ${o.itens.length} itens</p></div><button onclick="event.stopPropagation(); deletarPedido('${o.id}')" class="w-8 h-8 bg-white border rounded-full text-xs">🗑️</button></div><div class="mt-3"><p class="text-[9px] font-bold text-zinc-400">PRÉVIA</p>${itensPreview}${obsPreview}</div>${tempoInfo}<div class="mt-3 flex justify-between items-center bg-zinc-900 text-white rounded-xl p-2.5"><p class="text-[11px] font-bold">TOTAL MESA ${o.mesa}</p><p class="font-extrabold text-[13px]">R$ ${Number(o.total).toFixed(2)}</p></div><div class="mt-2.5 flex justify-between"><span class="text-[10px] text-zinc-500">📱 ${String(o.whats).slice(-4)}</span><span class="text-[10px] ${o.status=='novo'?'bg-blue-500':o.status=='preparo'?'bg-orange-500':'bg-green-600'} text-white px-2.5 py-1 rounded-full font-bold">${o.status.toUpperCase()}${o.tempoEstimado?' • '+o.tempoEstimado+'M':''}</span></div><div class="mt-3 flex gap-2" onclick="event.stopPropagation()">${o.status=='novo'?`<button onclick="mudaStatus('${o.id}','preparo')" class="flex-1 bg-zinc-900 text-white py-3 rounded-full font-bold text-xs">🔥 PREPARO</button>`:o.status=='preparo'?`<button onclick="mudaStatus('${o.id}','pronto')" class="flex-1 bg-orange-500 text-white py-3 rounded-full font-bold text-xs">✅ PRONTO (${o.tempoEstimado||'?'}m)</button>`:`<button onclick="abrirFinalizar('${o.id}')" class="flex-1 bg-green-600 text-white py-3 rounded-full font-bold text-xs">🏁 FINALIZAR</button>`}<button onclick="reiniciarMesa('${o.mesa}')" class="bg-zinc-100 border px-3 py-3 rounded-full text-[10px] font-bold">🔄 MESA</button></div></div>`;
+let card=`<div onclick="abrirDetalhe('${o.id}')" class="bg-[#FAFAFA] hover:bg-white border rounded-[18px] p-4 cursor-pointer shadow-sm"><div class="flex justify-between gap-2"><div class="flex-1 min-w-0"><p class="font-extrabold text-[13px] truncate">MESA ${o.mesa} • ${o.cliente.toUpperCase()}</p><p class="text-[11px] text-zinc-500">#${o.id.slice(-6)} • ${mins} min • R$ ${Number(o.total).toFixed(2)} • ${o.itens.length} itens</p></div><button onclick="event.stopPropagation(); deletarPedido('${o.id}')" class="w-8 h-8 bg-white border rounded-full text-xs">🗑️</button></div><div class="mt-3"><p class="text-[9px] font-bold text-zinc-400">PRÉVIA COM INGREDIENTES</p>${itensPreview}${obsPreview}</div>${tempoInfo}<div class="mt-3 flex justify-between items-center bg-zinc-900 text-white rounded-xl p-2.5"><p class="text-[11px] font-bold">TOTAL MESA ${o.mesa}</p><p class="font-extrabold text-[13px]">R$ ${Number(o.total).toFixed(2)}</p></div><div class="mt-3 flex gap-2" onclick="event.stopPropagation()">${o.status=='novo'?`<button onclick="mudaStatus('${o.id}','preparo')" class="flex-1 bg-zinc-900 text-white py-3 rounded-full font-bold text-xs">🔥 PREPARO</button>`:o.status=='preparo'?`<button onclick="mudaStatus('${o.id}','pronto')" class="flex-1 bg-orange-500 text-white py-3 rounded-full font-bold text-xs">✅ PRONTO (${o.tempoEstimado||'?'}m)</button>`:`<button onclick="abrirFinalizar('${o.id}')" class="flex-1 bg-green-600 text-white py-3 rounded-full font-bold text-xs">🏁 FINALIZAR</button>`}<button onclick="reiniciarMesa('${o.mesa}')" class="bg-zinc-100 border px-3 py-3 rounded-full text-[10px] font-bold">🔄 MESA</button></div></div>`;
 if(o.status=='novo'){colN.innerHTML+=card;n++;}else if(o.status=='preparo'){colP.innerHTML+=card;p++;}else if(o.status=='pronto'){colPr.innerHTML+=card;r++;}
 });
 document.getElementById('cNovos').textContent=n;document.getElementById('cPreparo').textContent=p;document.getElementById('cPronto').textContent=r;
@@ -124,7 +88,7 @@ async function salvarNoHistorico(pedido, tipoFinal){
   let hist={...pedido,horaFim:Date.now(),dataFim:new Date().toLocaleString('pt-BR'),tipoFinal:tipoFinal,horaFimISO:new Date().toISOString()};
   await db.collection('historico').doc(pedido.id).set(hist);
 }
-window.abrirDetalhe=(id)=>{let o=pedidos.find(x=>x.id==id);if(!o)return;let mins=Math.floor((Date.now()-(o.hora||Date.now()))/60000);let data=new Date(o.hora||Date.now()).toLocaleString('pt-BR');document.getElementById('detalheContent').innerHTML=`<div class="p-7"><div class="flex justify-between gap-4"><div class="min-w-0"><p class="text-[10px] text-zinc-400 font-bold">#${o.id.toUpperCase()} • ${o.status.toUpperCase()}${o.tempoEstimado?' • '+o.tempoEstimado+' MIN':''}</p><p class="font-extrabold text-4xl mt-1">MESA ${o.mesa}</p><p class="font-bold text-lg mt-1">${o.cliente.toUpperCase()} • R$ ${Number(o.total).toFixed(2)}</p><p class="text-xs text-zinc-500 mt-1">${data} • ${mins} min • ${o.itens.length} itens</p></div><button onclick="fecharDetalhe()" class="w-10 h-10 bg-zinc-100 rounded-full font-bold">✕</button></div><div class="mt-6 bg-zinc-50 border p-4 rounded-[18px]"><p class="font-extrabold text-sm">🧾 ITENS</p><div class="mt-3 grid gap-2">${o.itens.map((it,idx)=>`<div class="bg-white border p-3 rounded-xl flex gap-3 items-center"><span class="bg-zinc-900 text-white w-7 h-7 rounded-full grid place-items-center text-[11px] font-bold">${idx+1}</span><img src="${it.foto}" class="w-12 h-12 rounded-xl object-cover"><div class="flex-1 min-w-0"><p class="font-bold text-sm truncate">${it.base}</p><p class="text-[11px] text-zinc-500">${it.extras&&it.extras.length? '➕ '+it.extras.map(e=>e.nome).join(', '):'Sem adicionais'}</p></div><p class="font-bold text-sm">R$ ${Number(it.preco).toFixed(2)}</p></div>`).join('')}</div><div class="mt-4 bg-zinc-900 text-white p-3.5 rounded-xl flex justify-between"><p class="font-bold text-sm">TOTAL MESA ${o.mesa}</p><p class="font-extrabold text-lg">R$ ${Number(o.total).toFixed(2)}</p></div></div>${o.obs?`<div class="mt-4 bg-red-50 border-2 border-red-200 p-4 rounded-[18px]"><p class="font-black text-xs text-red-600">⚠️ OBS MESA ${o.mesa}</p><p class="font-bold mt-2">"${o.obs}"</p></div>`:''}<div class="mt-6 grid gap-2.5">${o.status=='novo'?`<button onclick="mudaStatus('${o.id}','preparo');fecharDetalhe()" class="w-full bg-zinc-900 text-white py-4 rounded-full font-bold">🔥 INICIAR PREPARO + DEFINIR TEMPO</button>`:''}${o.status=='preparo'?`<button onclick="mudaStatus('${o.id}','pronto');fecharDetalhe()" class="w-full bg-orange-500 text-white py-4 rounded-full font-bold">✅ PRONTO (Tempo: ${o.tempoEstimado||'?'} min)</button>`:''}${o.status=='pronto'?`<button onclick="abrirFinalizar('${o.id}')" class="w-full bg-green-600 text-white py-4 rounded-full font-bold">🏁 FINALIZAR - BALCÃO / MESA</button>`:''}<button onclick="reiniciarMesa('${o.mesa}')" class="w-full bg-zinc-100 border py-3 rounded-full font-bold text-xs">🔄 REINICIAR MESA ${o.mesa} (LIBERA PARA NOVOS CLIENTES)</button><button onclick="deletarPedido('${o.id}')" class="w-full bg-red-50 text-red-600 border py-3 rounded-full font-bold text-xs">🗑️ APAGAR (VAI PRO HISTÓRICO)</button><button onclick="fecharDetalhe()" class="w-full bg-zinc-100 py-3 rounded-full text-sm font-bold">Fechar</button></div></div>`;document.getElementById('modalDetalhe').classList.remove('hidden');};
+window.abrirDetalhe=(id)=>{let o=pedidos.find(x=>x.id==id);if(!o)return;let mins=Math.floor((Date.now()-(o.hora||Date.now()))/60000);let data=new Date(o.hora||Date.now()).toLocaleString('pt-BR');document.getElementById('detalheContent').innerHTML=`<div class="p-7"><div class="flex justify-between gap-4"><div class="min-w-0"><p class="text-[10px] text-zinc-400 font-bold">#${o.id.toUpperCase()} • ${o.status.toUpperCase()}${o.tempoEstimado?' • '+o.tempoEstimado+' MIN':''}</p><p class="font-extrabold text-4xl mt-1">MESA ${o.mesa}</p><p class="font-bold text-lg mt-1">${o.cliente.toUpperCase()} • R$ ${Number(o.total).toFixed(2)}</p><p class="text-xs text-zinc-500 mt-1">${data} • ${mins} min • ${o.itens.length} itens</p></div><button onclick="fecharDetalhe()" class="w-10 h-10 bg-zinc-100 rounded-full font-bold">✕</button></div><div class="mt-6 bg-zinc-50 border p-4 rounded-[18px]"><p class="font-extrabold text-sm">🧾 ITENS COM INGREDIENTES</p><div class="mt-3 grid gap-3">${o.itens.map((it,idx)=>`<div class="bg-white border p-4 rounded-xl"><div class="flex gap-3 items-center"><span class="bg-zinc-900 text-white w-7 h-7 rounded-full grid place-items-center text-[11px] font-bold">${idx+1}</span><img src="${it.foto}" class="w-12 h-12 rounded-xl object-cover"><div class="flex-1"><p class="font-bold text-sm">${it.base}</p><p class="text-[11px] text-zinc-500">R$ ${Number(it.preco).toFixed(2)}</p></div></div><div class="mt-3 bg-zinc-50 border rounded-xl p-3"><p class="text-[10px] font-black text-zinc-400">📋 INGREDIENTES BASE:</p><p class="text-[12px] text-zinc-700 mt-1 leading-relaxed">${it.ingredientes? it.ingredientes.join(' • '):'Sem ingredientes'}</p>${it.extras&&it.extras.length?`<div class="mt-3 bg-orange-50 border border-orange-200 rounded-xl p-2.5"><p class="text-[10px] font-black text-orange-600">➕ ADICIONAIS:</p><p class="text-[12px] font-bold text-orange-700 mt-1">${it.extras.map(e=>`${e.nome} (+R$ ${e.preco})`).join(', ')}</p></div>`:''}</div></div>`).join('')}</div><div class="mt-4 bg-zinc-900 text-white p-3.5 rounded-xl flex justify-between"><p class="font-bold text-sm">TOTAL MESA ${o.mesa}</p><p class="font-extrabold text-lg">R$ ${Number(o.total).toFixed(2)}</p></div></div>${o.obs?`<div class="mt-4 bg-red-50 border-2 border-red-200 p-4 rounded-[18px]"><p class="font-black text-xs text-red-600">⚠️ OBS MESA ${o.mesa}</p><p class="font-bold mt-2">"${o.obs}"</p></div>`:''}<div class="mt-6 grid gap-2.5">${o.status=='novo'?`<button onclick="mudaStatus('${o.id}','preparo');fecharDetalhe()" class="w-full bg-zinc-900 text-white py-4 rounded-full font-bold">🔥 INICIAR PREPARO + DEFINIR TEMPO</button>`:''}${o.status=='preparo'?`<button onclick="mudaStatus('${o.id}','pronto');fecharDetalhe()" class="w-full bg-orange-500 text-white py-4 rounded-full font-bold">✅ PRONTO (Tempo: ${o.tempoEstimado||'?'} min)</button>`:''}${o.status=='pronto'?`<button onclick="abrirFinalizar('${o.id}')" class="w-full bg-green-600 text-white py-4 rounded-full font-bold">🏁 FINALIZAR - BALCÃO / MESA</button>`:''}<button onclick="reiniciarMesa('${o.mesa}')" class="w-full bg-zinc-100 border py-3 rounded-full font-bold text-xs">🔄 REINICIAR MESA ${o.mesa}</button><button onclick="deletarPedido('${o.id}')" class="w-full bg-red-50 text-red-600 border py-3 rounded-full font-bold text-xs">🗑️ APAGAR (VAI PRO HISTÓRICO)</button><button onclick="fecharDetalhe()" class="w-full bg-zinc-100 py-3 rounded-full text-sm font-bold">Fechar</button></div></div>`;document.getElementById('modalDetalhe').classList.remove('hidden');};
 window.fecharDetalhe=()=>document.getElementById('modalDetalhe').classList.add('hidden');
 window.mudaStatus=async(id,st)=>{
   let p=pedidos.find(x=>x.id==id); if(!p) return;
@@ -133,17 +97,9 @@ window.mudaStatus=async(id,st)=>{
     if(tempo===null) return;
     tempo=parseInt(tempo); if(!tempo||tempo<1) tempo=15;
     await db.collection('pedidos').doc(id).update({status:st,tempoEstimado:tempo,inicioPreparo:Date.now(),previsaoPronto:Date.now()+(tempo*60000)});
-    if(document.getElementById('zapAuto').checked && p.whats){
-      let msg=`⏱️ ${p.cliente}, MESA ${p.mesa} seu pedido entrou em preparo!\nTempo estimado: ${tempo} minutos\nTotal: R$ ${Number(p.total).toFixed(2)}\n\nBurger House 🍔`;
-      window.open(`https://wa.me/55${String(p.whats).replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank');
-    }
     return;
   }
   await db.collection('pedidos').doc(id).update({status:st});
-  if(st=='pronto'&&document.getElementById('zapAuto').checked){
-    let pp=pedidos.find(x=>x.id==id);
-    if(pp?.whats){let msg=`✅ MESA ${pp.mesa} ${pp.cliente}, seu pedido R$ ${Number(pp.total).toFixed(2)} está PRONTO! Tempo era ${pp.tempoEstimado||'?'} min`;window.open(`https://wa.me/55${String(pp.whats).replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank');}
-  }
 };
 window.deletarPedido=async(id)=>{let p=pedidos.find(x=>x.id==id);if(!p)return;if(!confirm('🗑️ Apagar pedido #'+id.slice(-6)+'? Vai pro histórico!'))return;await salvarNoHistorico(p,'apagado');await db.collection('pedidos').doc(id).delete();fecharDetalhe();};
 window.limparEntregues=async()=>{let prontos=pedidos.filter(p=>p.status=='pronto');if(prontos.length==0){alert('Nenhum pronto');return;}if(!confirm(`Apagar ${prontos.length} prontos? Vão pro histórico!`))return;for(let p of prontos){await salvarNoHistorico(p,'limpeza_prontos');}let b=db.batch();prontos.forEach(p=>b.delete(db.collection('pedidos').doc(p.id)));await b.commit();};
@@ -152,10 +108,6 @@ window.closeFinalizar=()=>{document.getElementById('modalFinalizar').classList.a
 window.finalizarPedido=async(tipo)=>{
   if(!pedidoFinalizar) return;
   let mesaNum = pedidoFinalizar.mesa;
-  let msg=tipo=='balcao'?`✅ ${pedidoFinalizar.cliente} MESA ${mesaNum} PRONTO! RETIRE NO BALCÃO!`:tipo=='mesa'?`✅ ${pedidoFinalizar.cliente} MESA ${mesaNum} seu pedido está indo pra mesa!`:`✅ Pedido entregue! Obrigado ${pedidoFinalizar.cliente}!`;
-  if(document.getElementById('enviarZapFinal').checked && pedidoFinalizar.whats){
-    window.open(`https://wa.me/55${String(pedidoFinalizar.whats).replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank');
-  }
   await salvarNoHistorico(pedidoFinalizar, tipo);
   await db.collection('pedidos').doc(pedidoFinalizar.id).delete();
   let restantes = pedidos.filter(p=> String(p.mesa) == String(mesaNum) && p.id != pedidoFinalizar.id);
@@ -168,16 +120,15 @@ window.finalizarPedido=async(tipo)=>{
       horaFim: Date.now(),
       total: 0,
       cliente: 'SISTEMA - Mesa Liberada',
-      whats: '',
       itens: [],
-      obs: `Mesa ${mesaNum} liberada para novos clientes`
+      obs: `Mesa ${mesaNum} liberada`
     });
   }
   closeFinalizar();
-  alert(`✅ Mesa ${mesaNum} finalizada! Salvo no histórico e liberada.`);
+  alert(`✅ Mesa ${mesaNum} finalizada! SEM WhatsApp, salvo no histórico.`);
 };
 window.reiniciarMesa=async(mesaNum)=>{
-  if(!confirm(`🔄 REINICIAR MESA ${mesaNum}?\n\nVai salvar todos pedidos da mesa ${mesaNum} no histórico e liberar para novos clientes.`)) return;
+  if(!confirm(`🔄 REINICIAR MESA ${mesaNum}? Vai pro histórico e libera pra novos clientes.`)) return;
   let lista=pedidos.filter(p=> String(p.mesa) == String(mesaNum));
   if(lista.length==0){ alert('Nenhum pedido nessa mesa'); return; }
   for(let p of lista){ await salvarNoHistorico(p, 'mesa_reiniciada'); }
@@ -185,9 +136,8 @@ window.reiniciarMesa=async(mesaNum)=>{
   lista.forEach(p=>b.delete(db.collection('pedidos').doc(p.id)));
   await b.commit();
   fecharDetalhe();
-  alert(`🔄 Mesa ${mesaNum} REINICIADA! ${lista.length} pedidos salvos no histórico.`);
+  alert(`🔄 Mesa ${mesaNum} REINICIADA! ${lista.length} pedidos salvos.`);
 };
-
 window.openHistorico=()=>{document.getElementById('panelHistorico').classList.remove('hidden');renderHistorico();};
 window.closeHistorico=()=>document.getElementById('panelHistorico').classList.add('hidden');
 window.renderHistorico=()=>{
@@ -200,65 +150,20 @@ if(dataFiltro){let d=new Date(h.horaFim).toISOString().slice(0,10); if(d!=dataFi
 if(statusFiltro!='todos' && h.tipoFinal!=statusFiltro) return false;
 return true;
 });
-document.getElementById('gridHistorico').innerHTML=lista.map(h=>`<div class="bg-white border rounded-[18px] p-4"><div class="flex justify-between items-start"><div><p class="font-extrabold text-sm">MESA ${h.mesa} • ${h.cliente.toUpperCase()} • ${h.total? 'R$ '+Number(h.total).toFixed(2):''} ${h.tempoEstimado? ' • ⏱️ '+h.tempoEstimado+'MIN':''}</p><p class="text-[11px] text-zinc-500 mt-1">${h.dataFim} • #${h.id.slice(-6)} • ${h.tipoFinal.toUpperCase()} • ${h.itens.length} itens</p><p class="text-[11px] mt-2 text-zinc-700">${h.itens.map(i=>i.base+(i.extras?.length? ` (+${i.extras.map(e=>e.nome).join(', ')})`:'')).join(', ')}</p>${h.obs?`<p class="mt-2 text-[11px] bg-red-50 border p-2 rounded-xl">⚠️ ${h.obs}</p>`:''}</div><div class="text-right"><p class="text-[10px] bg-zinc-900 text-white px-2 py-1 rounded-full font-bold">${h.tipoFinal.toUpperCase()}</p><button onclick="restaurarPedido('${h.id}')" class="mt-2 bg-blue-50 text-blue-600 border px-3 py-1 rounded-full text-[10px] font-bold">↩️ Restaurar</button></div></div></div>`).join('')||'<p class="text-center py-10 text-zinc-400">Nenhum histórico</p>';
+document.getElementById('gridHistorico').innerHTML=lista.map(h=>`<div class="bg-white border rounded-[18px] p-4"><div class="flex justify-between items-start"><div><p class="font-extrabold text-sm">MESA ${h.mesa} • ${h.cliente.toUpperCase()} • ${h.total? 'R$ '+Number(h.total).toFixed(2):''} ${h.tempoEstimado? ' • ⏱️ '+h.tempoEstimado+'MIN':''}</p><p class="text-[11px] text-zinc-500 mt-1">${h.dataFim} • #${h.id.slice(-6)} • ${h.tipoFinal.toUpperCase()} • ${h.itens.length} itens</p><div class="mt-2 grid gap-2">${h.itens.map(it=>`<div class="bg-zinc-50 border rounded-xl p-2"><p class="font-bold text-xs">${it.base}</p><p class="text-[10px] text-zinc-600">📋 ${it.ingredientes? it.ingredientes.join(' • '):''}</p>${it.extras&&it.extras.length?`<p class="text-[10px] text-orange-600 font-bold">➕ ${it.extras.map(e=>e.nome).join(', ')}</p>`:''}</div>`).join('')}</div>${h.obs?`<p class="mt-2 text-[11px] bg-red-50 border p-2 rounded-xl">⚠️ ${h.obs}</p>`:''}</div><div class="text-right"><p class="text-[10px] bg-zinc-900 text-white px-2 py-1 rounded-full font-bold">${h.tipoFinal.toUpperCase()}</p><button onclick="restaurarPedido('${h.id}')" class="mt-2 bg-blue-50 text-blue-600 border px-3 py-1 rounded-full text-[10px] font-bold">↩️ Restaurar</button></div></div></div>`).join('')||'<p class="text-center py-10 text-zinc-400">Nenhum histórico</p>';
 };
 window.restaurarPedido=async(id)=>{let h=historico.find(x=>x.id==id);if(!h||h.tipoFinal.includes('liberada')) return;if(!confirm('Restaurar mesa '+h.mesa+'?'))return;let novo={...h, status:'novo', hora:Date.now(), id:Date.now().toString()};delete novo.horaFim;delete novo.dataFim;delete novo.tipoFinal;delete novo.horaFimISO;await db.collection('pedidos').doc(novo.id).set(novo);alert('Restaurado!');};
 window.limparHistorico=async()=>{if(!confirm('⚠️ Limpar TODO histórico?'))return;let b=db.batch();historico.forEach(h=>b.delete(db.collection('historico').doc(h.id)));await b.commit();};
-window.exportarHistorico=()=>{let csv='Data,Mesa,Cliente,Whats,Total,Tempo,Itens,Obs,Tipo,ID\n';historico.forEach(h=>{let itens=h.itens.map(i=>i.base).join(' | ').replace(/,/g,';');csv+=`"${h.dataFim}",${h.mesa},"${h.cliente}","${h.whats}",${h.total||0},${h.tempoEstimado||''},"${itens}","${(h.obs||'').replace(/"/g,'')}",${h.tipoFinal},${h.id}\n`;});let blob=new Blob([csv],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='historico.csv';a.click();};
-
-window.openQR=()=>{
-  const panel=document.getElementById('qrPanel');
-  panel.classList.remove('hidden');
-  panel.style.display='block';
-  let origin=location.origin;
-  let basePadrao=origin+'/';
-  if(location.pathname.includes('/admin')) basePadrao=origin+location.pathname.replace(/\/admin\/?.*$/,'/')+'/';
-  let saved=localStorage.getItem('baseLink')||basePadrao;
-  document.getElementById('baseLink').value=saved;
-  let qtdSaved=localStorage.getItem('qtdMesas');
-  if(qtdSaved) document.getElementById('qtdMesas').value=qtdSaved;
-  carregarLinksSalvos();
-  if(!document.getElementById('qrGrid').innerHTML.trim()) gerarQRS();
-};
+window.exportarHistorico=()=>{let csv='Data,Mesa,Cliente,Total,Tempo,Itens,Obs,Tipo,ID\n';historico.forEach(h=>{let itens=h.itens.map(i=>i.base+' ('+(i.ingredientes?i.ingredientes.join('/'):''+')'+' ['+(i.extras?i.extras.map(e=>e.nome).join('/'):''+']'))).join(' | ').replace(/,/g,';');csv+=`"${h.dataFim}",${h.mesa},"${h.cliente}",${h.total||0},${h.tempoEstimado||''},"${itens}","${(h.obs||'').replace(/"/g,'')}",${h.tipoFinal},${h.id}\n`;});let blob=new Blob([csv],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='historico.csv';a.click();};
+window.openQR=()=>{const panel=document.getElementById('qrPanel');panel.classList.remove('hidden');panel.style.display='block';let origin=location.origin;let basePadrao=origin+'/';if(location.pathname.includes('/admin')) basePadrao=origin+location.pathname.replace(/\/admin\/?.*$/,'/')+'/';let saved=localStorage.getItem('baseLink')||basePadrao;document.getElementById('baseLink').value=saved;let qtdSaved=localStorage.getItem('qtdMesas');if(qtdSaved) document.getElementById('qtdMesas').value=qtdSaved;carregarLinksSalvos();if(!document.getElementById('qrGrid').innerHTML.trim()) gerarQRS();};
 window.closeQR=()=>{let p=document.getElementById('qrPanel');p.classList.add('hidden');p.style.display='none';};
-function carregarLinksSalvos(){
-  try{
-    let salvos=JSON.parse(localStorage.getItem('linksSalvos')||'[]');
-    let baseAtual=localStorage.getItem('baseLink')||document.getElementById('baseLink').value||'';
-    document.getElementById('linksSalvos').innerHTML=`
-    <div class="bg-green-50 border border-green-200 rounded-xl p-3">
-    <p class="text-[11px] font-bold text-green-700">✅ LINK ATUAL SALVO:</p>
-    <p class="text-xs font-mono mt-1 break-all">${baseAtual||'Clique GERAR'}</p>
-    <p class="text-[10px] text-green-600 mt-1">Mesas: ${localStorage.getItem('qtdMesas')||12} • Última: ${localStorage.getItem('ultimaGeracao')||'nunca'}</p>
-    </div>
-    ${salvos.length? `<div class="mt-3"><p class="text-[11px] font-bold text-zinc-500">📋 SALVOS:</p><div class="mt-2 grid gap-1">${salvos.map((l,i)=>`<div class="flex justify-between items-center bg-zinc-50 border p-2 rounded-xl"><span class="text-xs truncate flex-1">${l.base} • ${l.qtd} mesas</span><button onclick="usarLinkSalvo(${i})" class="bg-black text-white px-3 py-1 rounded-full text-[10px] font-bold">Usar</button><button onclick="apagarLinkSalvo(${i})" class="ml-2 text-red-500 text-xs">✕</button></div>`).join('')}</div></div>`:''}
-    `;
-  }catch(e){}
-}
+function carregarLinksSalvos(){try{let salvos=JSON.parse(localStorage.getItem('linksSalvos')||'[]');let baseAtual=localStorage.getItem('baseLink')||document.getElementById('baseLink').value||'';document.getElementById('linksSalvos').innerHTML=`<div class="bg-green-50 border border-green-200 rounded-xl p-3"><p class="text-[11px] font-bold text-green-700">✅ LINK ATUAL SALVO:</p><p class="text-xs font-mono mt-1 break-all">${baseAtual||'Clique GERAR'}</p><p class="text-[10px] text-green-600 mt-1">Mesas: ${localStorage.getItem('qtdMesas')||12} • Última: ${localStorage.getItem('ultimaGeracao')||'nunca'}</p></div>${salvos.length? `<div class="mt-3"><p class="text-[11px] font-bold text-zinc-500">📋 SALVOS:</p><div class="mt-2 grid gap-1">${salvos.map((l,i)=>`<div class="flex justify-between items-center bg-zinc-50 border p-2 rounded-xl"><span class="text-xs truncate flex-1">${l.base} • ${l.qtd} mesas</span><button onclick="usarLinkSalvo(${i})" class="bg-black text-white px-3 py-1 rounded-full text-[10px] font-bold">Usar</button><button onclick="apagarLinkSalvo(${i})" class="ml-2 text-red-500 text-xs">✕</button></div>`).join('')}</div></div>`:''}`;}catch(e){}}
 window.salvarLink=()=>{let base=document.getElementById('baseLink').value.trim();let qtd=document.getElementById('qtdMesas').value;if(!base){alert('Digite link');return;}let salvos=JSON.parse(localStorage.getItem('linksSalvos')||'[]');salvos.unshift({base,qtd,data:new Date().toLocaleString('pt-BR')});localStorage.setItem('linksSalvos',JSON.stringify(salvos.slice(0,10)));localStorage.setItem('baseLink',base);localStorage.setItem('qtdMesas',qtd);carregarLinksSalvos();alert('✅ Salvo!');};
 window.usarLinkSalvo=(i)=>{let s=JSON.parse(localStorage.getItem('linksSalvos')||'[]')[i];document.getElementById('baseLink').value=s.base;document.getElementById('qtdMesas').value=s.qtd;gerarQRS();};
 window.apagarLinkSalvo=(i)=>{let s=JSON.parse(localStorage.getItem('linksSalvos')||'[]');s.splice(i,1);localStorage.setItem('linksSalvos',JSON.stringify(s));carregarLinksSalvos();};
-window.gerarQRS=()=>{
-  let base=document.getElementById('baseLink').value.trim()||location.origin+'/';
-  localStorage.setItem('baseLink',base);
-  let qtdVal=document.getElementById('qtdMesas').value||'12';
-  localStorage.setItem('qtdMesas',qtdVal);
-  localStorage.setItem('ultimaGeracao',new Date().toLocaleString('pt-BR'));
-  let baseClean=base.replace(/admin\/?$/,'').replace(/index\.html$/,'');
-  if(!baseClean.endsWith('/')) baseClean+='/';
-  let qtd=parseInt(qtdVal)||12;
-  let grid=document.getElementById('qrGrid');
-  grid.innerHTML='';
-  for(let i=1;i<=qtd;i++){
-    let link=`${baseClean}?mesa=${i}`;
-    let qr=`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(link)}&color=000000&bgcolor=FFCC00`;
-    grid.innerHTML+=`<div class="bg-white border rounded-[24px] overflow-hidden text-center shadow-sm"><div class="bg-[#FFCC00] p-3"><div class="flex items-center justify-center gap-2"><span class="text-xl">🍔</span><p class="font-black text-[13px] leading-none">BURGER<br>HOUSE</p></div></div><div class="bg-black text-[#FFCC00] py-2.5"><p class="font-black text-xl">MESA ${String(i).padStart(2,'0')}</p></div><div class="p-3 bg-[#FFCC00]"><p class="font-black text-[11px]">SCAN TO ORDER</p><img src="${qr}" class="w-full bg-white p-2 rounded-xl mt-2"></div><div class="p-2.5 bg-white"><p class="text-[6px] break-all text-zinc-400">${link}</p><a href="${qr}" download="mesa-${i}.png" target="_blank" class="mt-2 bg-zinc-900 text-white py-2 rounded-full text-[10px] font-bold block">BAIXAR PNG</a></div></div>`;
-  }
-  carregarLinksSalvos();
-};
+window.gerarQRS=()=>{let base=document.getElementById('baseLink').value.trim()||location.origin+'/';localStorage.setItem('baseLink',base);let qtdVal=document.getElementById('qtdMesas').value||'12';localStorage.setItem('qtdMesas',qtdVal);localStorage.setItem('ultimaGeracao',new Date().toLocaleString('pt-BR'));let baseClean=base.replace(/admin\/?$/,'').replace(/index\.html$/,'');if(!baseClean.endsWith('/')) baseClean+='/';let qtd=parseInt(qtdVal)||12;let grid=document.getElementById('qrGrid');grid.innerHTML='';for(let i=1;i<=qtd;i++){let link=`${baseClean}?mesa=${i}`;let qr=`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(link)}&color=000000&bgcolor=FFCC00`;grid.innerHTML+=`<div class="bg-white border rounded-[24px] overflow-hidden text-center shadow-sm"><div class="bg-[#FFCC00] p-3"><div class="flex items-center justify-center gap-2"><span class="text-xl">🍔</span><p class="font-black text-[13px] leading-none">BURGER<br>HOUSE</p></div></div><div class="bg-black text-[#FFCC00] py-2.5"><p class="font-black text-xl">MESA ${String(i).padStart(2,'0')}</p></div><div class="p-3 bg-[#FFCC00]"><p class="font-black text-[11px]">SCAN TO ORDER</p><img src="${qr}" class="w-full bg-white p-2 rounded-xl mt-2"></div><div class="p-2.5 bg-white"><p class="text-[6px] break-all text-zinc-400">${link}</p><a href="${qr}" download="mesa-${i}.png" target="_blank" class="mt-2 bg-zinc-900 text-white py-2 rounded-full text-[10px] font-bold block">BAIXAR PNG</a></div></div>`;}carregarLinksSalvos();};
 window.imprimirTodos=()=>{let base=localStorage.getItem('baseLink')||location.origin+'/';base=base.replace(/admin\/?$/,'').replace(/index\.html$/,'');if(!base.endsWith('/'))base+='/';let qtd=parseInt(document.getElementById('qtdMesas').value)||12;let html=`<html><head><style>@page{size:A4;margin:8mm}body{font-family:Arial Black;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px} .card{border-radius:14px;overflow:hidden;text-align:center;background:#FFCC00;border:2px solid #000} .top{background:#FFCC00;padding:10px} .mid{background:black;color:#FFCC00;padding:8px;font-size:28px} .qrArea{padding:10px} .qrArea img{width:200px;background:white;padding:8px;border-radius:10px}</style></head><body>`;for(let i=1;i<=qtd;i++){let link=`${base}?mesa=${i}`;let qr=`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(link)}&color=000000&bgcolor=FFCC00`;html+=`<div class="card"><div class="top">🍔 BURGER HOUSE</div><div class="mid">MESA ${String(i).padStart(2,'0')}</div><div class="qrArea"><p style="font-size:11px">SCAN TO ORDER</p><img src="${qr}"><p style="font-size:7px">${link}</p></div></div>`;}html+=`</body></html>`;let w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),700);};
 window.baixarLinks=()=>{let base=localStorage.getItem('baseLink')||location.origin+'/';base=base.replace(/admin\/?$/,'').replace(/index\.html$/,'');if(!base.endsWith('/'))base+='/';let qtd=parseInt(localStorage.getItem('qtdMesas')||12);let txt='';for(let i=1;i<=qtd;i++)txt+=`Mesa ${i}: ${base}?mesa=${i}\n`;navigator.clipboard.writeText(txt).then(()=>alert('✅ '+qtd+' links copiados!'));};
-
 document.addEventListener('keydown',(e)=>{if(e.key==='Escape'){fecharDetalhe();closeFinalizar();closeQR();closeHistorico();}});
 setInterval(()=>{if(pedidos.length) renderKDS();},10000);
 </script>
