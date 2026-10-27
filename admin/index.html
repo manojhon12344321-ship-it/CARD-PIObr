@@ -3,182 +3,308 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KDS PREMIUM - BURGER HOUSE</title>
+<title>BURGER HOUSE - ADMIN LIGHT FINAL</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
-<style>body{font-family:Inter} .bebas{font-family:'Bebas Neue'} .atrasado{animation:blink 0.8s infinite} @keyframes blink{0%,100%{box-shadow:0 0 0 3px #ef4444}50%{box-shadow:0 0 0 6px #7f1d1d}} .scroll-hide::-webkit-scrollbar{display:none}</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>body{font-family:Inter} ::-webkit-scrollbar{width:4px;height:4px} ::-webkit-scrollbar-thumb{background:#ddd;border-radius:10px}</style>
 </head>
-<body class="bg-[#080808] text-white min-h-screen">
-
-<!-- HEADER PREMIUM -->
-<header class="sticky top-0 z-30 bg-[#0F0F0F]/95 backdrop-blur-xl border-b border-white/[0.06]">
-<div class="px-4 py-3 flex justify-between items-center">
-<div class="flex items-center gap-4">
-<div class="flex items-center gap-3"><div class="w-10 h-10 bg-yellow-400 rounded-full grid place-items-center text-black font-black">BH</div><div><p class="bebas text-[20px] leading-none">BURGER HOUSE KDS</p><p class="text-[9px] text-white/30 tracking-widest">AO VIVO • cardapiobr-be645</p></div></div>
-<div class="hidden md:flex gap-2 ml-6">
-<div class="bg-[#1A1A1A] px-4 py-2 rounded-full"><p class="text-[9px] text-white/40">PEDIDOS</p><p id="kdsCount" class="font-black text-sm">0</p></div>
-<div class="bg-[#1A1A1A] px-4 py-2 rounded-full"><p class="text-[9px] text-white/40">FAT HOJE</p><p id="fatDia" class="font-black text-sm text-green-400">R$ 0,00</p></div>
-<div class="bg-[#1A1A1A] px-4 py-2 rounded-full"><p class="text-[9px] text-white/40">TICKET</p><p id="ticketDia" class="font-black text-sm">R$ 0,00</p></div>
-</div>
+<body class="bg-[#F6F6F7] text-[#111] select-none">
+<header class="sticky top-0 z-20 bg-white border-b border-zinc-200 px-5 py-3 flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-[#111] text-white rounded-xl grid place-items-center font-black">BH</div>
+<div><p class="font-extrabold leading-none">Burger House</p><p class="text-[11px] text-zinc-500">Admin Dashboard • LIGHT • AO VIVO</p></div>
+<span id="kdsCount" class="ml-4 bg-zinc-900 text-white px-3 py-1 rounded-full text-xs font-bold">0 ativos</span>
 </div>
 <div class="flex items-center gap-2">
-<span id="statusSom" class="hidden md:flex text-[9px] bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-2 rounded-full">🔴 SOM DESATIVADO</span>
-<input id="buscaMesa" placeholder="🔍 Mesa ou cliente" class="bg-[#1A1A1A] border border-white/10 px-4 py-2.5 rounded-full text-xs w-36 md:w-48 outline-none focus:border-yellow-400" oninput="renderKDS()">
-<button onclick="testarSom()" class="w-10 h-10 bg-[#1A1A1A] rounded-full grid place-items-center">🔊</button>
-<button onclick="openQR()" class="bg-yellow-400 text-black px-4 py-2.5 rounded-full font-black text-[11px]">🔗 QR MESAS</button>
-<button onclick="openPainel()" class="bg-white text-black px-4 py-2.5 rounded-full font-black text-[11px] hidden md:block">📺 TV</button>
-</div>
-</div>
-<!-- MOBILE STATS -->
-<div class="md:hidden px-4 pb-3 flex gap-2">
-<div class="flex-1 bg-[#1A1A1A] p-3 rounded-2xl text-center"><p class="text-[8px] text-white/30">PEDIDOS</p><p id="kdsCountM" class="font-black">0</p></div>
-<div class="flex-1 bg-[#1A1A1A] p-3 rounded-2xl text-center"><p class="text-[8px] text-white/30">FAT</p><p id="fatDiaM" class="font-black text-green-400">R$ 0</p></div>
-<div class="flex-1 bg-[#1A1A1A] p-3 rounded-2xl text-center"><p class="text-[8px] text-white/30">PRONTO</p><p id="cProntoM" class="font-black">0</p></div>
+<label class="flex items-center gap-2 text-[11px] bg-zinc-100 px-3 py-2 rounded-full cursor-pointer"><input id="zapAuto" type="checkbox" checked class="accent-black"> Zap Auto</label>
+<input id="buscaMesa" placeholder="🔍 Mesa, cliente..." class="bg-[#F6F6F7] border border-zinc-200 px-4 py-2 rounded-full text-xs w-44 outline-none focus:border-black focus:bg-white transition" oninput="renderKDS()">
+<button onclick="openQR()" class="bg-zinc-900 hover:bg-black text-white px-4 py-2 rounded-full text-xs font-bold transition">QR Mesas</button>
+<button onclick="limparEntregues()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-2 rounded-full text-xs font-bold transition">🗑️ Limpar prontos</button>
 </div>
 </header>
 
-<!-- KDS 3 COLUNAS ORGANIZADO -->
-<div class="px-3 py-4 grid md:grid-cols-3 gap-3 max-w-[1600px] mx-auto">
-<!-- COLUNA 1 -->
-<div class="bg-[#111] rounded-[24px] border border-white/[0.04] min-h-[70vh]">
-<div class="p-4 flex justify-between items-center border-b border-white/[0.04]"><div class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span><p class="bebas text-[16px] tracking-widest">RECEBIDOS</p><span id="cNovos" class="bg-yellow-400 text-black text-[10px] font-black px-2 py-1 rounded-full">0</span></div><p class="text-[9px] text-white/20">NOVO → FAZER</p></div>
-<div id="colNovos" class="p-3 grid gap-3"></div>
+<div class="max-w-[1500px] mx-auto p-5 grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="bg-white rounded-[20px] border border-zinc-200 p-5"><p class="text-[11px] text-zinc-500 font-semibold uppercase tracking-widest">💰 Faturamento Hoje</p><p id="fatDia" class="font-extrabold text-2xl mt-1">R$ 0,00</p><p class="text-[11px] text-green-600 mt-1 font-bold">• AO VIVO</p></div>
+<div class="bg-white rounded-[20px] border border-zinc-200 p-5"><p class="text-[11px] text-zinc-500 font-semibold uppercase tracking-widest">📦 Pedidos Hoje</p><p id="pedHoje" class="font-extrabold text-2xl mt-1">0</p><p id="ticketMed" class="text-[11px] text-zinc-500 mt-1">Ticket R$ 0,00</p></div>
+<div class="bg-white rounded-[20px] border border-zinc-200 p-5"><p class="text-[11px] text-zinc-500 font-semibold uppercase tracking-widest">🪑 Mesas Ativas</p><p id="mesasAtivas" class="font-extrabold text-2xl mt-1">0/12</p><p class="text-[11px] text-zinc-500 mt-1">ocupadas</p></div>
+<div class="bg-white rounded-[20px] border border-zinc-200 p-5"><p class="text-[11px] text-zinc-500 font-semibold uppercase tracking-widest">⏱️ Tempo Médio</p><p id="tempoMedio" class="font-extrabold text-2xl mt-1">0m</p><p class="text-[11px] text-zinc-500 mt-1">preparo médio</p></div>
 </div>
-<!-- COLUNA 2 -->
-<div class="bg-[#111] rounded-[24px] border border-white/[0.04] min-h-[70vh]">
-<div class="p-4 flex justify-between items-center border-b border-white/[0.04]"><div class="flex items-center gap-2"><span class="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></span><p class="bebas text-[16px] tracking-widest">EM PREPARO</p><span id="cPreparo" class="bg-orange-400 text-black text-[10px] font-black px-2 py-1 rounded-full">0</span></div><p class="text-[9px] text-white/20">COZINHANDO</p></div>
-<div id="colPreparo" class="p-3 grid gap-3"></div>
+
+<div class="max-w-[1500px] mx-auto px-5 pb-24 grid md:grid-cols-3 gap-5 items-start">
+<div class="bg-white rounded-[24px] border border-zinc-200 shadow-sm"><div class="p-5 flex justify-between items-center border-b border-zinc-100 sticky top-0 bg-white rounded-t-[24px]"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 bg-blue-500 rounded-full"></span><p class="font-extrabold text-sm">Recebidos</p><span id="cNovos" class="bg-blue-500 text-white px-2.5 py-0.5 rounded-full text-[11px] font-bold">0</span></div><p class="text-[10px] text-zinc-400 font-bold tracking-widest">NOVO</p></div><div id="colNovos" class="p-3 grid gap-3 min-h-[200px]"></div></div>
+<div class="bg-white rounded-[24px] border border-zinc-200 shadow-sm"><div class="p-5 flex justify-between items-center border-b border-zinc-100 sticky top-0 bg-white rounded-t-[24px]"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 bg-orange-500 rounded-full animate-pulse"></span><p class="font-extrabold text-sm">Em Preparo</p><span id="cPreparo" class="bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[11px] font-bold">0</span></div><p class="text-[10px] text-zinc-400 font-bold tracking-widest">COZINHA</p></div><div id="colPreparo" class="p-3 grid gap-3 min-h-[200px]"></div></div>
+<div class="bg-white rounded-[24px] border border-zinc-200 shadow-sm"><div class="p-5 flex justify-between items-center border-b border-zinc-100 sticky top-0 bg-white rounded-t-[24px]"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span><p class="font-extrabold text-sm">Pronto</p><span id="cPronto" class="bg-green-500 text-white px-2.5 py-0.5 rounded-full text-[11px] font-bold">0</span></div><p class="text-[10px] text-zinc-400 font-bold tracking-widest">ENTREGA</p></div><div id="colPronto" class="p-3 grid gap-3 min-h-[200px]"></div></div>
 </div>
-<!-- COLUNA 3 -->
-<div class="bg-[#111] rounded-[24px] border border-white/[0.04] min-h-[70vh]">
-<div class="p-4 flex justify-between items-center border-b border-white/[0.04]"><div class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span><p class="bebas text-[16px] tracking-widest">PRONTO PRA RETIRADA</p><span id="cPronto" class="bg-green-400 text-black text-[10px] font-black px-2 py-1 rounded-full">0</span></div><p class="text-[9px] text-white/20">CHAMAR CLIENTE</p></div>
-<div id="colPronto" class="p-3 grid gap-3"></div>
+
+<div id="modalDetalhe" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+<div class="bg-white rounded-[28px] w-full max-w-[680px] max-h-[92vh] overflow-auto border border-zinc-200 shadow-2xl"><div id="detalheContent"></div></div>
+</div>
+
+<div id="modalFinalizar" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
+<div class="bg-white rounded-[28px] w-full max-w-[400px] p-6 border border-zinc-200 shadow-2xl">
+<h3 class="font-extrabold text-xl">Finalizar Pedido?</h3>
+<p id="finalizarInfo" class="text-sm text-zinc-500 mt-2"></p>
+<div class="mt-5 grid gap-2">
+<button onclick="finalizarPedido('balcao')" class="w-full bg-zinc-900 hover:bg-black text-white py-4 rounded-full font-bold transition">📢 RETIRADA NO BALCÃO</button>
+<button onclick="finalizarPedido('mesa')" class="w-full bg-[#FFCC00] hover:bg-[#FFD633] text-black py-4 rounded-full font-bold transition">🍽️ ENTREGAR NA MESA</button>
+<button onclick="finalizarPedido('entregue')" class="w-full bg-white border border-zinc-300 hover:bg-zinc-50 py-4 rounded-full font-bold transition">✅ SÓ MARCAR ENTREGUE</button>
+<label class="mt-2 flex items-center gap-2 text-xs bg-zinc-50 border border-zinc-200 p-3 rounded-xl cursor-pointer"><input id="enviarZapFinal" type="checkbox" checked class="accent-black"> Enviar WhatsApp avisando? (opcional)</label>
+<button onclick="closeFinalizar()" class="w-full mt-2 bg-zinc-100 hover:bg-zinc-200 py-3 rounded-full text-xs font-bold transition">Cancelar</button>
+</div>
 </div>
 </div>
 
-<!-- FOOTER -->
-<div class="fixed bottom-0 left-0 right-0 bg-[#0F0F0F] border-t border-white/5 px-4 py-2 flex justify-between items-center text-[10px] text-white/30">
-<span>🔒 Senha: 1234 • 5 cliques na logo do cliente • Clique no card pra ver detalhes</span>
-<button onclick="openReport()" class="bg-white/10 px-3 py-1.5 rounded-full font-black text-white">📊 Relatório</button>
-</div>
-
-<!-- MODAL DETALHES PREMIUM -->
-<div id="modalDetalhe" class="hidden fixed inset-0 bg-black/90 backdrop-blur-xl z-[100] flex items-center justify-center p-4">
-<div class="bg-[#161616] border border-white/10 rounded-[32px] w-full max-w-[640px] max-h-[92vh] overflow-auto scroll-hide"><div id="detalheContent"></div></div>
-</div>
-
-<!-- MODAL QR -->
-<div id="qrPanel" class="hidden fixed inset-0 bg-[#080808] z-[90] p-6 overflow-auto">
-<div class="max-w-6xl mx-auto">
-<div class="flex justify-between items-center"><div><h2 class="bebas text-3xl">QR CODES POR MESA</h2><p class="text-xs text-white/40">Link direto por mesa • Fundo amarelo BH</p></div><button onclick="closeQR()" class="bg-white text-black w-10 h-10 rounded-full font-black">✕</button></div>
-<div class="mt-6 bg-[#111] border border-white/5 p-5 rounded-[24px] grid md:grid-cols-3 gap-4">
-<div><p class="text-[10px] font-black tracking-widest text-white/40">LINK BASE DO SEU SITE</p><input id="baseLink" class="w-full mt-2 bg-black border border-white/10 p-3.5 rounded-2xl text-sm outline-none focus:border-yellow-400" placeholder="https://...github.io/CARD-PIObr/"></div>
-<div><p class="text-[10px] font-black tracking-widest text-white/40">QTD MESAS</p><input id="qtdMesas" type="number" value="10" class="w-full mt-2 bg-black border border-white/10 p-3.5 rounded-2xl text-sm outline-none"></div>
-<div class="flex items-end"><button onclick="gerarQRS()" class="w-full bg-yellow-400 text-black py-3.5 rounded-full font-black text-sm">GERAR QR AMARELO</button></div>
-</div>
-<div class="mt-4 flex gap-3"><button onclick="imprimirTodos()" class="bg-white text-black px-6 py-3 rounded-full font-black text-xs">🖨️ IMPRIMIR A4</button><button onclick="baixarLinks()" class="bg-[#1A1A1A] px-6 py-3 rounded-full font-black text-xs">📋 COPIAR LINKS</button></div>
-<div id="qrGrid" class="mt-6 grid md:grid-cols-4 gap-4"></div>
+<div id="qrPanel" class="hidden fixed inset-0 bg-[#F6F6F7] z-[90] p-6 overflow-auto">
+<div class="max-w-7xl mx-auto">
+<div class="flex justify-between items-center"><div><h2 class="font-extrabold text-2xl">QR Codes - Estilo Burger House Amarelo 2</h2><p class="text-xs text-zinc-500 mt-1">Fundo amarelo • Texto preto • Melhor conversão • MESA gigante</p></div><button onclick="closeQR()" class="bg-black text-white w-11 h-11 rounded-full font-bold hover:bg-zinc-800">✕</button></div>
+<div class="mt-6 grid md:grid-cols-4 gap-3 bg-white p-5 rounded-[20px] border border-zinc-200 shadow-sm"><input id="baseLink" placeholder="Link base (https://seusite.com/)" class="bg-zinc-50 border border-zinc-200 p-3 rounded-xl text-sm outline-none focus:border-black col-span-2"><input id="qtdMesas" type="number" value="12" min="1" max="100" class="bg-zinc-50 border border-zinc-200 p-3 rounded-xl text-sm outline-none"><button onclick="gerarQRS()" class="bg-[#FFCC00] hover:bg-[#FFD633] text-black py-3 rounded-full font-bold transition">GERAR QR AMARELO</button></div>
+<div class="mt-4 flex gap-2 flex-wrap"><button onclick="imprimirTodos()" class="bg-zinc-900 hover:bg-black text-white px-6 py-3 rounded-full text-xs font-bold transition">🖨️ IMPRIMIR A4 - PLACAS DE MESA</button><button onclick="baixarLinks()" class="bg-white border border-zinc-300 hover:bg-zinc-50 px-6 py-3 rounded-full text-xs font-bold transition">📋 COPIAR LINKS</button></div>
+<div id="qrGrid" class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
 </div>
 </div>
-
-<!-- TV -->
-<div id="painelTV" class="hidden fixed inset-0 bg-black z-50 p-6 flex flex-col"><div class="flex justify-between"><h1 class="bebas text-5xl">📺 PEDIDOS PRONTOS - RETIRE NO BALCÃO</h1><button onclick="closePainel()" class="bg-white text-black px-6 py-2 rounded-full font-black">FECHAR TV</button></div><div id="tvGrid" class="flex-1 grid md:grid-cols-3 gap-6 mt-8"></div></div>
-
-<!-- RELATORIO -->
-<div id="reportPanel" class="hidden fixed inset-0 bg-[#080808] z-40 p-6 overflow-auto"><div class="max-w-5xl mx-auto"><div class="flex justify-between items-center"><h2 class="bebas text-3xl">RELATÓRIO DO DIA</h2><button onclick="closeReport()" class="bg-white text-black w-10 h-10 rounded-full font-black">✕</button></div><div class="grid md:grid-cols-4 gap-4 mt-6"><div class="bg-[#111] p-5 rounded-[24px] border border-white/5"><p class="text-[10px] text-white/40 tracking-widest">FATURAMENTO</p><p id="repFat" class="font-black text-3xl text-green-400 mt-1">R$ 0,00</p></div><div class="bg-[#111] p-5 rounded-[24px] border border-white/5"><p class="text-[10px] text-white/40 tracking-widest">PEDIDOS</p><p id="repPed" class="font-black text-3xl mt-1">0</p></div><div class="bg-[#111] p-5 rounded-[24px] border border-white/5"><p class="text-[10px] text-white/40 tracking-widest">TICKET MÉDIO</p><p id="repTicket" class="font-black text-2xl mt-1">R$ 0,00</p></div><div class="bg-[#111] p-5 rounded-[24px] border border-white/5"><p class="text-[10px] text-white/40 tracking-widest">MAIS PEDIDO</p><p id="repTop" class="font-black text-sm mt-1"></p></div></div><div id="repLista" class="mt-6 bg-[#111] rounded-[24px] border border-white/5 p-2"></div></div></div>
 
 <script>
-const firebaseConfig = { apiKey: "AIzaSyDfnlWLGHySS42WMOcve1qP-dSH3cF-J50", authDomain: "cardapiobr-be645.firebaseapp.com", projectId: "cardapiobr-be645", storageBucket: "cardapiobr-be645.firebasestorage.app", messagingSenderId: "1013095361613", appId: "1:1013095361613:web:31d58aa9ebda0135110004" };
-firebase.initializeApp(firebaseConfig); const db=firebase.firestore();
-let pedidos=[]; let audioCtx=null; let somAtivo=false; let ultimoTotal=0;
-function initAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); somAtivo=true; document.getElementById('statusSom').textContent='🟢 SOM ATIVO'; document.getElementById('statusSom').className='text-[9px] bg-green-500/20 text-green-400 border border-green-500/30 px-3 py-2 rounded-full'; }
-function tocarBip(){ if(!somAtivo) return; try{ const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value=880; g.gain.setValueAtTime(1,audioCtx.currentTime); o.start(); g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.4); o.stop(audioCtx.currentTime+0.4); setTimeout(()=>{ const o2=audioCtx.createOscillator(); const g2=audioCtx.createGain(); o2.connect(g2); g2.connect(audioCtx.destination); o2.frequency.value=1200; g2.gain.setValueAtTime(1,audioCtx.currentTime); o2.start(); g2.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.4); o2.stop(audioCtx.currentTime+0.4); },200); }catch(e){} }
-window.testarSom=()=>{ initAudio(); tocarBip(); };
-document.body.addEventListener('click',()=>{initAudio();},{once:true});
-if(prompt('🔒 Senha KDS (1234)')!=='1234'){document.body.innerHTML='<p class="p-10 font-black">Acesso negado</p>';}
+const firebaseConfig={apiKey:"AIzaSyDfnlWLGHySS42WMOcve1qP-dSH3cF-J50",authDomain:"cardapiobr-be645.firebaseapp.com",projectId:"cardapiobr-be645",storageBucket:"cardapiobr-be645.firebasestorage.app",messagingSenderId:"1013095361613",appId:"1:1013095361613:web:31d58aa9ebda0135110004"};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+let pedidos=[],pedidoFinalizar=null;
+
+if(prompt('🔒 Senha admin (1234)')!=='1234'){document.body.innerHTML='<div class="p-10 text-center"><p class="font-black text-xl">Acesso negado</p><a href="../" class="text-blue-600 underline text-sm">Voltar</a></div>'; throw new Error('senha');}
+
 db.collection('pedidos').orderBy('hora','desc').onSnapshot(s=>{
-  let novos=s.docs.map(d=>d.data());
-  if(novos.length>ultimoTotal && ultimoTotal!==0){ tocarBip(); if(Notification && Notification.permission==="granted"){ let u=novos[0]; new Notification(`🔥 MESA ${u.mesa} - ${u.cliente} - R$ ${u.total.toFixed(2)}`); } }
-  pedidos=novos; ultimoTotal=pedidos.length; renderKDS(); renderPainel(); renderReport();
+  pedidos=s.docs.map(d=>d.data());
+  renderKDS();
 });
+
 function renderKDS(){
-  let busca=(document.getElementById('buscaMesa').value||'').toLowerCase();
-  let colN=document.getElementById('colNovos'), colP=document.getElementById('colPreparo'), colPr=document.getElementById('colPronto');
-  colN.innerHTML=''; colP.innerHTML=''; colPr.innerHTML=''; let n=0,p=0,r=0; let fat=0;
-  pedidos.forEach(o=>{
-    if(busca && !(o.mesa.toString().includes(busca) || o.cliente.toLowerCase().includes(busca))) return;
-    fat+=o.total;
-    let mins=Math.floor((Date.now()-o.hora)/60000); let atrasado=mins>7;
-    let card=`<div onclick="abrirDetalhe('${o.id}')" class="group bg-[#1C1C1C] hover:bg-[#222] border border-white/[0.06] rounded-[20px] overflow-hidden cursor-pointer transition ${atrasado&&o.status!='pronto'?'atrasado':''}">
-      <div class="p-3.5 flex justify-between items-start ${o.status=='novo'?'bg-yellow-400 text-black':o.status=='preparo'?'bg-orange-400 text-black':'bg-green-400 text-black'}">
-        <div><p class="font-black text-[13px] leading-none">MESA ${o.mesa} • ${o.cliente.toUpperCase().slice(0,18)}</p><p class="text-[10px] font-bold opacity-70 mt-1">#${o.id.slice(-5)} • ${mins} MIN ${atrasado?'• ATRASADO':''} • R$ ${o.total.toFixed(2)}</p></div>
-        <div class="bg-black/10 w-7 h-7 rounded-full grid place-items-center text-[11px]">👁️</div>
-      </div>
-      <div class="p-3.5">
-        <div class="flex gap-1.5 flex-wrap">${o.itens.slice(0,3).map(it=>`<span class="text-[10px] bg-white/[0.06] border border-white/10 px-2.5 py-1 rounded-full font-bold">${it.base.slice(0,18)}</span>`).join('')}${o.itens.length>3?`<span class="text-[10px] bg-yellow-400 text-black px-2 py-1 rounded-full font-black">+${o.itens.length-3}</span>`:''}</div>
-        <div class="mt-3 flex justify-between items-center"><p class="text-[10px] text-white/40">📱 ${o.whats.slice(-9)} • ${o.itens.length} itens ${o.obs?'• ⚠️ OBS':''}</p><span class="text-[9px] text-white/20">${new Date(o.hora).toLocaleTimeString('pt-BR').slice(0,5)}</span></div>
-      </div>
-      <div class="px-3.5 pb-3.5 grid gap-2" onclick="event.stopPropagation()">
-        ${o.status=='novo'?`<button onclick="mudaStatus('${o.id}','preparo')" class="w-full bg-white text-black py-3 rounded-full font-black text-[11px] hover:bg-yellow-400 transition">🔥 INICIAR PREPARO</button>`:''}
-        ${o.status=='preparo'?`<button onclick="mudaStatus('${o.id}','pronto')" class="w-full bg-white text-black py-3 rounded-full font-black text-[11px] hover:bg-green-400 transition">✅ MARCAR PRONTO + WHATSAPP</button>`:''}
-        ${o.status=='pronto'?`<button onclick="mudaStatus('${o.id}','entregue')" class="w-full bg-white text-black py-3 rounded-full font-black text-[11px]">📦 ENTREGUE</button>`:''}
-      </div>
-    </div>`;
-    if(o.status=='novo'){colN.innerHTML+=card; n++;} else if(o.status=='preparo'){colP.innerHTML+=card; p++;} else if(o.status=='pronto'){colPr.innerHTML+=card; r++;}
-  });
-  document.getElementById('cNovos').textContent=n; document.getElementById('cPreparo').textContent=p; document.getElementById('cPronto').textContent=r;
-  document.getElementById('kdsCount').textContent=n+p+r; document.getElementById('kdsCountM').textContent=n+p+r;
-  document.getElementById('fatDia').textContent='R$ '+fat.toFixed(2); document.getElementById('fatDiaM').textContent='R$ '+fat.toFixed(0);
-  document.getElementById('cProntoM').textContent=r; document.getElementById('ticketDia').textContent=pedidos.length?'R$ '+(fat/pedidos.length).toFixed(2):'R$ 0,00';
-}
-window.abrirDetalhe=(id)=>{
-  let o=pedidos.find(x=>x.id==id); if(!o) return;
-  let mins=Math.floor((Date.now()-o.hora)/60000); let data=new Date(o.hora).toLocaleString('pt-BR');
-  document.getElementById('detalheContent').innerHTML=`
-  <div class="p-7">
-    <div class="flex justify-between items-start">
-      <div><p class="text-[10px] tracking-[0.2em] font-black text-white/30">#${o.id}</p><p class="bebas text-4xl mt-1 leading-none">MESA ${o.mesa} • ${o.cliente.toUpperCase()}</p><p class="text-xs text-white/40 mt-2">⏰ ${data} • Há ${mins} min • <span class="bg-white text-black px-2 py-0.5 rounded-full text-[10px] font-black">${o.status.toUpperCase()}</span></p></div>
-      <button onclick="fecharDetalhe()" class="w-10 h-10 bg-white/10 rounded-full font-black hover:bg-white hover:text-black transition">✕</button>
-    </div>
-    <div class="grid md:grid-cols-2 gap-3 mt-7">
-      <div class="bg-white/[0.04] border border-white/5 p-4 rounded-[20px]"><p class="text-[9px] font-black tracking-widest text-white/30">CLIENTE</p><p class="font-black text-[15px] mt-2">${o.cliente}</p><p class="text-sm mt-1 text-white/60">📱 ${o.whats}</p><a href="https://wa.me/55${o.whats.replace(/\D/g,'')}" target="_blank" class="mt-3 inline-flex bg-[#25D366] text-white px-4 py-2 rounded-full text-[11px] font-black">💬 WHATSAPP</a></div>
-      <div class="bg-white/[0.04] border border-white/5 p-4 rounded-[20px]"><p class="text-[9px] font-black tracking-widest text-white/30">RESUMO</p><p class="font-black text-2xl mt-2">R$ ${o.total.toFixed(2)}</p><p class="text-xs mt-1 text-white/60">Mesa ${o.mesa} • ${o.itens.length} itens • ${new Date(o.hora).toLocaleTimeString('pt-BR')}</p></div>
-    </div>
-    <div class="mt-6"><p class="bebas text-[18px] tracking-widest">ITENS DO PEDIDO</p><div class="mt-3 grid gap-2.5">${o.itens.map(it=>`<div class="flex gap-3 bg-white/[0.04] border border-white/5 p-3 rounded-2xl"><img src="${it.foto}" class="w-14 h-14 rounded-xl object-cover"><div class="flex-1"><p class="font-black text-[13px]">${it.base}</p><p class="text-[11px] text-white/40 mt-0.5">${it.extras?it.extras.map(e=>e.nome).join(' • '):'Sem adicionais'} • R$ ${it.preco.toFixed(2)}</p></div><p class="font-black text-sm">R$ ${it.preco.toFixed(2)}</p></div>`).join('')}</div></div>
-    ${o.obs?`<div class="mt-5 bg-red-500/10 border border-red-500/20 p-4 rounded-2xl"><p class="font-black text-[11px] tracking-widest text-red-400">⚠️ OBSERVAÇÃO DO CLIENTE</p><p class="font-bold text-[14px] mt-2 text-red-200">"${o.obs}"</p></div>`:''}
-    <div class="mt-7 grid gap-2.5">
-      ${o.status=='novo'?`<button onclick="mudaStatus('${o.id}','preparo'); fecharDetalhe()" class="w-full bg-yellow-400 text-black py-4 rounded-full font-black text-sm">🔥 INICIAR PREPARO</button>`:''}
-      ${o.status=='preparo'?`<button onclick="mudaStatus('${o.id}','pronto'); fecharDetalhe()" class="w-full bg-green-500 text-black py-4 rounded-full font-black text-sm">✅ PRONTO + ENVIAR WHATSAPP</button>`:''}
-      ${o.status=='pronto'?`<button onclick="mudaStatus('${o.id}','entregue'); fecharDetalhe()" class="w-full bg-white text-black py-4 rounded-full font-black text-sm">📦 CONFIRMAR ENTREGA</button>`:''}
-      <button onclick="fecharDetalhe()" class="w-full bg-white/5 border border-white/10 py-3.5 rounded-full font-bold text-sm">FECHAR DETALHES</button>
+let busca=(document.getElementById('buscaMesa').value||'').toLowerCase();
+let colN=document.getElementById('colNovos');
+let colP=document.getElementById('colPreparo');
+let colPr=document.getElementById('colPronto');
+colN.innerHTML='';colP.innerHTML='';colPr.innerHTML='';
+let n=0,p=0,r=0,fat=0;
+let mesasSet=new Set();
+let tempoTotal=0;
+
+pedidos.forEach(o=>{
+if(busca && !(o.mesa.toString().includes(busca) || o.cliente.toLowerCase().includes(busca) || o.id.toLowerCase().includes(busca))) return;
+fat+=o.total;
+mesasSet.add(o.mesa);
+let mins=Math.floor((Date.now()-o.hora)/60000);
+tempoTotal+=mins;
+
+let itensPreview = o.itens.map(it=>{
+  let extrasTxt = it.extras && it.extras.length ? `<span class="text-[9px] text-orange-600 font-bold"> + ${it.extras.map(e=>e.nome).join(', ')}</span>` : '<span class="text-[9px] text-zinc-400"> • sem adicionais</span>';
+  return `<div class="flex gap-2 items-center bg-white border border-zinc-200 rounded-xl p-2 mt-1.5">
+    <img src="${it.foto}" class="w-9 h-9 rounded-lg object-cover flex-shrink-0" onerror="this.src='https://via.placeholder.com/40'">
+    <div class="flex-1 leading-tight min-w-0">
+      <p class="font-bold text-[11px] truncate">${it.base.toUpperCase()}${extrasTxt}</p>
+      <p class="text-[9px] text-zinc-500 mt-0.5">R$ ${Number(it.preco).toFixed(2)} • 1x</p>
     </div>
   </div>`;
-  document.getElementById('modalDetalhe').classList.remove('hidden');
+}).join('');
+
+let obsPreview = o.obs ? `<div class="mt-2.5 bg-red-50 border border-red-200 text-red-700 rounded-xl p-2.5"><p class="text-[9px] font-black tracking-widest">⚠️ OBS MESA ${o.mesa}:</p><p class="text-[11px] font-bold mt-1 leading-tight">"${o.obs}"</p></div>` : '';
+
+let card=`<div onclick="abrirDetalhe('${o.id}')" class="bg-[#FAFAFA] hover:bg-white border border-zinc-200 hover:border-zinc-300 rounded-[18px] p-4 cursor-pointer transition-all shadow-sm hover:shadow-md">
+<div class="flex justify-between items-start gap-2">
+  <div class="min-w-0 flex-1">
+    <p class="font-extrabold text-[13px] truncate">MESA ${o.mesa} • ${o.cliente.toUpperCase()}</p>
+    <p class="text-[11px] text-zinc-500 mt-1 truncate">#${o.id.slice(-6)} • há ${mins} min • R$ ${Number(o.total).toFixed(2)} • ${o.itens.length} ${o.itens.length>1?'itens':'item'}</p>
+  </div>
+  <button onclick="event.stopPropagation(); deletarPedido('${o.id}')" class="w-8 h-8 bg-white border border-zinc-200 rounded-full grid place-items-center text-xs hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition flex-shrink-0">🗑️</button>
+</div>
+
+<div class="mt-3">
+  <p class="text-[9px] font-bold text-zinc-400 tracking-widest">PRÉVIA DO PEDIDO</p>
+  ${itensPreview}
+  ${obsPreview}
+</div>
+
+<div class="mt-3 flex justify-between items-center bg-zinc-900 text-white rounded-xl p-2.5">
+  <p class="text-[11px] font-bold">TOTAL MESA ${o.mesa}</p>
+  <p class="font-extrabold text-[13px]">R$ ${Number(o.total).toFixed(2)}</p>
+</div>
+
+<div class="mt-2.5 flex justify-between items-center">
+  <span class="text-[10px] text-zinc-500 truncate">📱 ${String(o.whats).slice(-4)} • ${o.cliente.split(' ')[0]} • ${o.itens.length}x</span>
+  <span class="text-[10px] ${o.status=='novo'?'bg-blue-500':o.status=='preparo'?'bg-orange-500':'bg-green-600'} text-white px-2.5 py-1 rounded-full font-bold tracking-wide">${o.status.toUpperCase()} • ${mins}M</span>
+</div>
+
+<div class="mt-3" onclick="event.stopPropagation()">
+  ${o.status=='novo'?`<button onclick="mudaStatus('${o.id}','preparo')" class="w-full bg-zinc-900 hover:bg-black text-white py-3 rounded-full font-bold text-xs transition">🔥 INICIAR PREPARO</button>`:
+    o.status=='preparo'?`<button onclick="mudaStatus('${o.id}','pronto')" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full font-bold text-xs transition">✅ MARCAR PRONTO</button>`:
+    `<button onclick="abrirFinalizar('${o.id}')" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-full font-bold text-xs transition">🏁 FINALIZAR • BALCÃO / MESA</button>`}
+</div>
+</div>`;
+
+if(o.status=='novo'){colN.innerHTML+=card;n++;}
+else if(o.status=='preparo'){colP.innerHTML+=card;p++;}
+else if(o.status=='pronto'){colPr.innerHTML+=card;r++;}
+});
+
+document.getElementById('cNovos').textContent=n;
+document.getElementById('cPreparo').textContent=p;
+document.getElementById('cPronto').textContent=r;
+document.getElementById('kdsCount').textContent=(n+p+r)+' ativos';
+document.getElementById('fatDia').textContent='R$ '+fat.toFixed(2);
+document.getElementById('pedHoje').textContent=pedidos.length;
+document.getElementById('ticketMed').textContent='Ticket R$ '+(pedidos.length? (fat/pedidos.length).toFixed(2):'0,00');
+document.getElementById('mesasAtivas').textContent=mesasSet.size+'/12';
+document.getElementById('tempoMedio').textContent=(pedidos.length? Math.floor(tempoTotal/pedidos.length):0)+'m';
 }
+
+window.abrirDetalhe=(id)=>{
+let o=pedidos.find(x=>x.id==id);
+if(!o) return;
+let mins=Math.floor((Date.now()-o.hora)/60000);
+let data=new Date(o.hora).toLocaleString('pt-BR');
+document.getElementById('detalheContent').innerHTML=`
+<div class="p-7">
+<div class="flex justify-between gap-4">
+  <div class="min-w-0">
+    <p class="text-[10px] tracking-widest text-zinc-400 font-bold">#${o.id.toUpperCase()} • ${o.status.toUpperCase()}</p>
+    <p class="font-extrabold text-4xl mt-1 tracking-tight">MESA ${o.mesa}</p>
+    <p class="font-bold text-lg mt-1 truncate">${o.cliente.toUpperCase()} • R$ ${Number(o.total).toFixed(2)}</p>
+    <p class="text-xs text-zinc-500 mt-1">${data} • há ${mins} min • ${o.itens.length} itens • Mesa ${o.mesa}</p>
+  </div>
+  <button onclick="fecharDetalhe()" class="w-10 h-10 bg-zinc-100 hover:bg-zinc-200 rounded-full font-bold transition flex-shrink-0">✕</button>
+</div>
+
+<div class="grid md:grid-cols-2 gap-3 mt-6">
+<div class="bg-zinc-50 border border-zinc-200 p-4 rounded-[18px]">
+  <p class="text-[10px] font-bold text-zinc-400 tracking-widest">CLIENTE • MESA ${o.mesa} • DETALHES COMPLETOS</p>
+  <p class="font-bold mt-2">👤 ${o.cliente}</p>
+  <p class="text-sm mt-1">📱 ${o.whats}</p>
+  <p class="text-[11px] text-zinc-500 mt-1 break-all">Link Zap: 55${String(o.whats).replace(/\D/g,'')}</p>
+  <div class="mt-3 flex gap-2 flex-wrap">
+    <a href="https://wa.me/55${String(o.whats).replace(/\D/g,'')}" target="_blank" class="bg-[#25D366] hover:bg-[#20bd5a] text-white px-4 py-2 rounded-full text-xs font-bold transition">💬 Chamar Zap</a>
+    <button onclick="deletarPedido('${o.id}')" class="bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 px-4 py-2 rounded-full text-xs font-bold transition">🗑️ Apagar Pedido</button>
+  </div>
+</div>
+<div class="bg-zinc-900 text-white p-4 rounded-[18px]">
+  <p class="text-[10px] tracking-widest text-white/50 font-bold">RESUMO FINANCEIRO MESA ${o.mesa}</p>
+  <p class="font-extrabold text-3xl mt-2">R$ ${Number(o.total).toFixed(2)}</p>
+  <p class="text-xs mt-1 text-white/60">Mesa ${o.mesa} • ${o.itens.length} itens • ID ${o.id.slice(-6)}</p>
+  <p class="mt-3 inline-block ${mins>15?'bg-red-500':mins>7?'bg-orange-500':'bg-white/10'} px-3 py-1.5 rounded-full text-xs font-bold">${mins>15?'🔥 MUITO ATRASADO '+mins+' MIN':mins>7?'⚠️ ATRASADO '+mins+' MIN':'🟢 No tempo • '+mins+' min'}</p>
+</div>
+</div>
+
+<div class="mt-6 bg-zinc-50 border border-zinc-200 p-4 rounded-[18px]">
+  <p class="font-extrabold text-sm tracking-wide">🧾 ITENS DETALHADOS - MESA ${o.mesa} - PRÉVIA COMPLETA</p>
+  <div class="mt-3 grid gap-2">
+    ${o.itens.map((it,idx)=>`<div class="bg-white border border-zinc-200 p-3 rounded-xl flex gap-3 items-center"><span class="bg-zinc-900 text-white w-7 h-7 rounded-full grid place-items-center text-[11px] font-bold flex-shrink-0">${idx+1}</span><img src="${it.foto}" class="w-12 h-12 rounded-xl object-cover flex-shrink-0" onerror="this.src='https://via.placeholder.com/50'"><div class="flex-1 min-w-0"><p class="font-bold text-sm truncate">${it.base}</p><p class="text-[11px] text-zinc-500 mt-0.5">${it.extras&&it.extras.length? '➕ '+it.extras.map(e=>e.nome+' (R$ '+Number(e.preco).toFixed(2)+')').join(', '):'Sem adicionais'}</p></div><p class="font-bold text-sm flex-shrink-0">R$ ${Number(it.preco).toFixed(2)}</p></div>`).join('')}
+  </div>
+  <div class="mt-4 bg-zinc-900 text-white p-3.5 rounded-xl flex justify-between items-center"><p class="font-bold text-sm">TOTAL MESA ${o.mesa} - ${o.cliente.toUpperCase()}</p><p class="font-extrabold text-lg">R$ ${Number(o.total).toFixed(2)}</p></div>
+</div>
+
+${o.obs?`<div class="mt-4 bg-red-50 border-2 border-red-200 p-4 rounded-[18px]"><p class="font-black text-xs text-red-600 tracking-widest">⚠️ OBSERVAÇÃO DA MESA ${o.mesa}</p><p class="font-bold mt-2 text-zinc-900 leading-tight">"${o.obs}"</p></div>`:''}
+
+<div class="mt-6 grid gap-2.5">
+${o.status=='novo'?`<button onclick="mudaStatus('${o.id}','preparo');fecharDetalhe()" class="w-full bg-zinc-900 hover:bg-black text-white py-4 rounded-full font-bold transition">🔥 INICIAR PREPARO MESA ${o.mesa}</button>`:''}
+${o.status=='preparo'?`<button onclick="mudaStatus('${o.id}','pronto');fecharDetalhe()" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-full font-bold transition">✅ PRONTO MESA ${o.mesa}</button>`:''}
+${o.status=='pronto'?`<button onclick="abrirFinalizar('${o.id}')" class="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-full font-bold transition">🏁 FINALIZAR - BALCÃO / MESA / ENTREGUE</button>`:''}
+<button onclick="deletarPedido('${o.id}')" class="w-full bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 py-3 rounded-full font-bold text-xs transition">🗑️ APAGAR PEDIDO DEFINITIVO - MESA ${o.mesa}</button>
+<button onclick="fecharDetalhe()" class="w-full bg-zinc-100 hover:bg-zinc-200 py-3 rounded-full text-sm font-bold transition">Fechar Detalhes</button>
+</div>
+</div>`;
+document.getElementById('modalDetalhe').classList.remove('hidden');
+};
+
 window.fecharDetalhe=()=>document.getElementById('modalDetalhe').classList.add('hidden');
-window.mudaStatus=async(id,st)=>{ let p=pedidos.find(x=>x.id==id); if(st=='entregue') await db.collection('pedidos').doc(id).delete(); else await db.collection('pedidos').doc(id).update({status:st}); if(st=='pronto'&&p?.whats){ let msg=`✅ MESA ${p.mesa} ${p.cliente}, seu pedido de R$ ${p.total.toFixed(2)} está PRONTO! Retire no balcão Burger House!`; window.open(`https://wa.me/55${p.whats.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank'); }};
-window.openQR=()=>{document.getElementById('qrPanel').classList.remove('hidden'); let saved=localStorage.getItem('baseLink')||location.origin+location.pathname.replace('admin/','').replace('admin',''); if(saved) document.getElementById('baseLink').value=saved;};
+
+window.mudaStatus=async(id,st)=>{
+  if(st=='entregue'){await db.collection('pedidos').doc(id).delete(); return;}
+  await db.collection('pedidos').doc(id).update({status:st});
+  if(st=='pronto' && document.getElementById('zapAuto').checked){
+    let p=pedidos.find(x=>x.id==id);
+    if(p?.whats){
+      let msg=`✅ MESA ${p.mesa} ${p.cliente}, seu pedido de R$ ${Number(p.total).toFixed(2)} está PRONTO! Retire no balcão Burger House!`;
+      window.open(`https://wa.me/55${String(p.whats).replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank');
+    }
+  }
+};
+
+window.deletarPedido=async(id)=>{
+  if(!confirm('🗑️ Apagar pedido #'+id.slice(-6)+'? Isso apaga DEFINITIVO do Firebase!')) return;
+  await db.collection('pedidos').doc(id).delete();
+  fecharDetalhe();
+};
+
+window.limparEntregues=async()=>{
+  let prontos=pedidos.filter(p=>p.status=='pronto');
+  if(prontos.length==0){alert('Nenhum pronto pra limpar'); return;}
+  if(!confirm(`Apagar TODOS os ${prontos.length} pedidos prontos?`)) return;
+  let batch=db.batch();
+  prontos.forEach(p=>{batch.delete(db.collection('pedidos').doc(p.id));});
+  await batch.commit();
+};
+
+window.abrirFinalizar=(id)=>{
+  pedidoFinalizar=pedidos.find(x=>x.id==id);
+  if(!pedidoFinalizar) return;
+  document.getElementById('finalizarInfo').textContent=`Mesa ${pedidoFinalizar.mesa} • ${pedidoFinalizar.cliente} • R$ ${Number(pedidoFinalizar.total).toFixed(2)} • ${pedidoFinalizar.itens.length} itens • #${pedidoFinalizar.id.slice(-6)}`;
+  document.getElementById('modalFinalizar').classList.remove('hidden');
+  fecharDetalhe();
+};
+
+window.closeFinalizar=()=>{document.getElementById('modalFinalizar').classList.add('hidden');pedidoFinalizar=null;};
+
+window.finalizarPedido=async(tipo)=>{
+if(!pedidoFinalizar) return;
+let msg='';
+if(tipo=='balcao') msg=`✅ ${pedidoFinalizar.cliente} - MESA ${pedidoFinalizar.mesa} seu pedido de R$ ${Number(pedidoFinalizar.total).toFixed(2)} está PRONTO! RETIRE NO BALCÃO Burger House!`;
+else if(tipo=='mesa') msg=`✅ ${pedidoFinalizar.cliente} - MESA ${pedidoFinalizar.mesa} seu pedido está indo para sua mesa agora! R$ ${Number(pedidoFinalizar.total).toFixed(2)}`;
+else msg=`✅ ${pedidoFinalizar.cliente}, seu pedido MESA ${pedidoFinalizar.mesa} foi entregue! Obrigado! Volte sempre! Burger House!`;
+
+if(document.getElementById('enviarZapFinal').checked && pedidoFinalizar.whats){
+  window.open(`https://wa.me/55${String(pedidoFinalizar.whats).replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+await db.collection('pedidos').doc(pedidoFinalizar.id).delete();
+closeFinalizar();
+};
+
+window.openQR=()=>{
+  document.getElementById('qrPanel').classList.remove('hidden');
+  let saved=localStorage.getItem('baseLink')||location.origin+location.pathname.replace('admin/','').replace('admin','').replace('index.html','');
+  if(saved) document.getElementById('baseLink').value=saved;
+};
 window.closeQR=()=>document.getElementById('qrPanel').classList.add('hidden');
+
 window.gerarQRS=()=>{
-  let base=document.getElementById('baseLink').value.trim() || location.origin+location.pathname.replace('admin/','').replace('admin','');
-  localStorage.setItem('baseLink', base); base=base.replace('admin/','').replace('admin','').replace('index.html',''); if(!base.endsWith('/')) base+='/';
-  let qtd=parseInt(document.getElementById('qtdMesas').value)||10; let grid=document.getElementById('qrGrid'); grid.innerHTML='';
-  for(let i=1;i<=qtd;i++){ let link=`${base}?mesa=${i}`; let qrImg=`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(link)}&color=000000&bgcolor=FFCC00`; grid.innerHTML+=`<div class="bg-white text-black rounded-[24px] p-4 text-center border border-white/5"><div class="bg-black text-white rounded-full w-8 h-8 grid place-items-center font-black mx-auto text-xs">${i}</div><p class="bebas text-[16px] mt-2">MESA ${i}</p><div class="bg-[#FFCC00] p-3 rounded-2xl mt-3"><img src="${qrImg}" class="w-full bg-white p-2 rounded-xl"><p class="font-black text-[10px] mt-2 tracking-widest">BURGER HOUSE</p><p class="text-[8px] tracking-widest opacity-60">ESCANEIE PARA PEDIR</p></div><p class="text-[7px] break-all mt-2 opacity-40">${link}</p><a href="${qrImg}" download="mesa-${i}.png" target="_blank" class="mt-3 bg-black text-white py-2.5 rounded-full font-black text-[10px] block text-center">BAIXAR PNG</a></div>`; }
+let base=document.getElementById('baseLink').value.trim()||location.origin+location.pathname.replace('admin/','');
+localStorage.setItem('baseLink',base);
+base=base.replace('admin/','').replace('index.html','');
+if(!base.endsWith('/')) base+='/';
+let qtd=parseInt(document.getElementById('qtdMesas').value)||12;
+let grid=document.getElementById('qrGrid');
+grid.innerHTML='';
+for(let i=1;i<=qtd;i++){
+let link=`${base}?mesa=${i}`;
+let qr=`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(link)}&color=000000&bgcolor=FFCC00`;
+grid.innerHTML+=`<div class="bg-white border border-zinc-200 rounded-[24px] overflow-hidden text-center shadow-sm hover:shadow-md transition"><div class="bg-[#FFCC00] p-3"><div class="flex items-center justify-center gap-2"><span class="text-xl">🍔</span><p class="font-black text-[13px] leading-none">BURGER<br>HOUSE</p></div></div><div class="bg-black text-[#FFCC00] py-2.5"><p class="font-black text-xl tracking-widest">MESA ${String(i).padStart(2,'0')}</p></div><div class="p-3 bg-[#FFCC00]"><p class="font-black text-[11px] text-black">SCAN TO ORDER</p><img src="${qr}" class="w-full bg-white p-2 rounded-xl mt-2" loading="lazy"><p class="text-[8px] font-bold text-black mt-2 leading-tight">Order directly from your phone<br>• Fast & Easy</p></div><div class="p-2.5 bg-white"><p class="text-[6px] break-all text-zinc-400 leading-tight">${link}</p><a href="${qr}" download="mesa-${i}-burgerhouse.png" target="_blank" class="mt-2 bg-zinc-900 hover:bg-black text-white py-2 rounded-full text-[10px] font-bold block text-center transition">BAIXAR PNG</a></div></div>`;
+}
 };
+
 window.imprimirTodos=()=>{
-  let base=localStorage.getItem('baseLink')||location.origin; base=base.replace('admin/','').replace('index.html',''); if(!base.endsWith('/')) base+='/';
-  let qtd=parseInt(document.getElementById('qtdMesas').value)||10;
-  let html=`<html><head><style>@media print{@page{size:A4}} body{font-family:sans-serif; display:grid; grid-template-columns:1fr 1fr; gap:20px; padding:20px} .card{border:3px dashed #000; border-radius:24px; padding:20px; text-align:center} img{width:200px; background:#FFCC00; padding:12px; border-radius:16px}</style></head><body>`;
-  for(let i=1;i<=qtd;i++){ let link=`${base}?mesa=${i}`; let qr=`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(link)}&color=000000&bgcolor=FFCC00`; html+=`<div class="card"><h1 style="font-size:56px; margin:0; font-family:Impact">MESA ${i}</h1><img src="${qr}"><p><b>BURGER HOUSE</b><br>Escaneie e peça sem garçom</p><p style="font-size:9px">${link}</p></div>`; }
-  html+=`</body></html>`; let w=window.open('','_blank'); w.document.write(html); w.document.close(); setTimeout(()=>w.print(),500);
+let base=localStorage.getItem('baseLink')||location.origin;
+base=base.replace('admin/','').replace('index.html','');
+if(!base.endsWith('/')) base+='/';
+let qtd=parseInt(document.getElementById('qtdMesas').value)||12;
+let html=`<html><head><title>QR Mesas Burger House</title><style>@page{size:A4;margin:8mm} body{font-family:Arial Black,sans-serif;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px;background:#fff} .card{border-radius:14px;overflow:hidden;text-align:center;background:#FFCC00;display:flex;flex-direction:column;border:2px solid #000} .top{background:#FFCC00;padding:10px;font-size:14px} .mid{background:black;color:#FFCC00;padding:8px;font-size:28px} .qrArea{padding:10px;flex:1} .qrArea img{width:200px;background:white;padding:8px;border-radius:10px}</style></head><body>`;
+for(let i=1;i<=qtd;i++){let link=`${base}?mesa=${i}`;let qr=`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(link)}&color=000000&bgcolor=FFCC00`;html+=`<div class="card"><div class="top">🍔 BURGER HOUSE</div><div class="mid">MESA ${String(i).padStart(2,'0')}</div><div class="qrArea"><p style="font-size:11px">SCAN TO ORDER</p><img src="${qr}"><p style="font-size:7px;margin-top:6px;word-break:break-all">${link}</p></div></div>`;}
+html+=`</body></html>`;let w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),700);
 };
-window.baixarLinks=()=>{ let base=localStorage.getItem('baseLink')||location.origin; base=base.replace('admin/','').replace('index.html',''); if(!base.endsWith('/')) base+='/'; let qtd=parseInt(document.getElementById('qtdMesas').value)||10; let txt=''; for(let i=1;i<=qtd;i++) txt+=`Mesa ${i}: ${base}?mesa=${i}\n`; navigator.clipboard.writeText(txt); alert('Links copiados!'); };
-function renderPainel(){ document.getElementById('tvGrid').innerHTML=pedidos.filter(o=>o.status=='pronto').map(o=>`<div class="bg-white text-black rounded-[40px] p-10 text-center"><p class="text-[11px] tracking-[0.3em] font-black text-zinc-400">PEDIDO PRONTO</p><p class="bebas text-8xl mt-2 leading-none">MESA ${o.mesa}</p><p class="font-black text-3xl mt-2">${o.cliente.toUpperCase()}</p><p class="mt-3 bg-black text-white inline-block px-6 py-2 rounded-full font-black">R$ ${o.total.toFixed(2)}</p></div>`).join('')||'<p class="text-white/20 text-2xl">Nenhum pedido pronto</p>';}
-function renderReport(){ let fat=pedidos.reduce((s,p)=>s+p.total,0); document.getElementById('repFat').textContent='R$ '+fat.toFixed(2); document.getElementById('repPed').textContent=pedidos.length; document.getElementById('repTicket').textContent=pedidos.length?'R$ '+(fat/pedidos.length).toFixed(2):'R$ 0,00'; let top={}; pedidos.forEach(p=>p.itens.forEach(it=>{top[it.base]=(top[it.base]||0)+1})); let mais=Object.entries(top).sort((a,b)=>b[1]-a[1])[0]; document.getElementById('repTop').textContent=mais?mais[0]+' ('+mais[1]+'x)':'-'; document.getElementById('repLista').innerHTML=pedidos.map(p=>`<div class="flex justify-between items-center text-xs py-4 px-4 border-b border-white/5"><div><p class="font-bold text-[13px]">MESA ${p.mesa} • ${p.cliente} • ${p.whats}</p><p class="text-[11px] text-white/40 mt-1">${p.itens.map(i=>i.base).join(', ')} ${p.obs?'• OBS: '+p.obs:''}</p></div><div class="text-right"><p class="font-black">R$ ${p.total.toFixed(2)}</p><p class="text-[10px] text-white/30">${p.status}</p></div></div>`).join('');}
-window.openPainel=()=>{document.getElementById('painelTV').classList.remove('hidden'); renderPainel();}; window.closePainel=()=>document.getElementById('painelTV').classList.add('hidden');
-window.openReport=()=>{document.getElementById('reportPanel').classList.remove('hidden'); renderReport();}; window.closeReport=()=>document.getElementById('reportPanel').classList.add('hidden');
+
+window.baixarLinks=()=>{
+let base=localStorage.getItem('baseLink')||location.origin;base=base.replace('admin/','').replace('index.html','');if(!base.endsWith('/'))base+='/';
+let qtd=parseInt(document.getElementById('qtdMesas').value)||12;let txt='';for(let i=1;i<=qtd;i++)txt+=`Mesa ${i}: ${base}?mesa=${i}\n`;
+navigator.clipboard.writeText(txt).then(()=>alert('✅ '+qtd+' links copiados!')).catch(()=>prompt('Copie os links:',txt));
+};
+
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape'){fecharDetalhe();closeFinalizar();closeQR();}});
 </script>
 </body>
 </html>
