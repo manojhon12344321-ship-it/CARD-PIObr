@@ -16,7 +16,7 @@
 <div id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4"></div></main>
 <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black"><div class="max-w-[1200px] mx-auto"><div class="bg-white text-black rounded-[24px] p-4 flex justify-between"><div><p class="text-[10px] text-zinc-400">MESA <span id="sacolaMesa">-</span></p><p id="sacolaTotal" class="font-black">R$ 0,00 • 0 itens</p></div><button id="btnVerSacola" class="bg-black text-white px-6 py-3 rounded-full font-black text-sm">VER SACOLA</button></div></div></div>
 <div id="trackingWrap" class="fixed bottom-[88px] left-0 right-0 p-4 hidden"><div class="max-w-[1200px] mx-auto"><div class="bg-[#1A1A1A] border border-yellow-400/20 rounded-[24px] p-4"><p class="font-black text-[11px] text-yellow-400">📍 SEU PEDIDO • MESA <span id="trackMesa"></span></p><div id="trackList" class="mt-3 grid gap-2"></div></div></div></div>
-<div id="modalSacola" class="hidden fixed inset-0 bg-black/80 z-50 flex items-end justify-center"><div class="bg-white text-black rounded-t-[32px] w-full max-w-[480px] max-h-[92vh] flex flex-col"><div class="p-6 border-b flex justify-between"><p class="font-black text-xl">Sacola • Mesa <span id="modalMesa"></span></p><button onclick="closeSacola()" class="w-8 h-8 bg-zinc-100 rounded-full">✕</button></div><div id="carrinho" class="flex-1 overflow-auto p-4"></div><div class="p-6 border-t"><textarea id="obs" placeholder="Obs: tirar cebola..." class="w-full bg-zinc-100 p-3 rounded-2xl text-sm h-14 outline-none"></textarea><input id="nome" placeholder="Seu nome *" class="w-full mt-3 bg-zinc-100 p-4 rounded-2xl text-sm outline-none"><input id="whats" placeholder="WhatsApp *" class="w-full mt-2 bg-zinc-100 p-4 rounded-2xl text-sm outline-none"><div class="flex justify-between mt-4"><span>Total</span><span id="total" class="font-black text-2xl">R$ 0,00</span></div><button id="btnPedir" class="w-full mt-4 bg-yellow-400 text-black py-5 rounded-full font-black">🍔 ENVIAR PRA COZINHA</button><p class="text-[10px] text-zinc-400 text-center mt-2">⏱️ Após enviar, a cozinha informa o tempo estimado aqui</p></div></div></div>
+<div id="modalSacola" class="hidden fixed inset-0 bg-black/80 z-50 flex items-end justify-center"><div class="bg-white text-black rounded-t-[32px] w-full max-w-[480px] max-h-[92vh] flex flex-col"><div class="p-6 border-b flex justify-between"><p class="font-black text-xl">Sacola • Mesa <span id="modalMesa"></span></p><button onclick="closeSacola()" class="w-8 h-8 bg-zinc-100 rounded-full">✕</button></div><div id="carrinho" class="flex-1 overflow-auto p-4"></div><div class="p-6 border-t"><textarea id="obs" placeholder="Obs: tirar cebola..." class="w-full bg-zinc-100 p-3 rounded-2xl text-sm h-14 outline-none"></textarea><input id="nome" placeholder="Seu nome *" class="w-full mt-3 bg-zinc-100 p-4 rounded-2xl text-sm outline-none"><input id="whats" placeholder="WhatsApp *" class="w-full mt-2 bg-zinc-100 p-4 rounded-2xl text-sm outline-none"><div class="flex justify-between mt-4"><span>Total</span><span id="total" class="font-black text-2xl">R$ 0,00</span></div><button id="btnPedir" class="w-full mt-4 bg-yellow-400 text-black py-5 rounded-full font-black">🍔 ENVIAR PRA COZINHA</button></div></div></div>
 <div id="modalLanche" class="hidden fixed inset-0 bg-black/90 z-[60] flex items-end justify-center"><div class="bg-[#181818] rounded-t-[32px] w-full max-w-[520px]"><img id="mFoto" class="w-full h-[300px] object-cover"><div class="p-6"><h3 id="mNome" class="bebas text-3xl"></h3><p id="mDesc" class="text-sm text-white/50"></p><p id="mPrecoBase" class="font-black text-2xl text-yellow-400 mt-2"></p><div id="mAdds" class="mt-4 grid gap-2"></div><div class="mt-4 bg-white text-black rounded-2xl p-4 flex justify-between"><span>TOTAL</span><span id="mTotal" class="font-black"></span></div><button id="mAdd" class="w-full mt-4 bg-yellow-400 text-black py-5 rounded-full font-black">ADICIONAR</button><button onclick="closeModal()" class="w-full mt-3 text-white/30 text-xs">Fechar</button></div></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyDfnlWLGHySS42WMOcve1qP-dSH3cF-J50",authDomain:"cardapiobr-be645.firebaseapp.com",projectId:"cardapiobr-be645",storageBucket:"cardapiobr-be645.firebasestorage.app",messagingSenderId:"1013095361613",appId:"1:1013095361613:web:31d58aa9ebda0135110004"};
@@ -53,27 +53,32 @@ window.closeModal=()=>document.getElementById('modalLanche').classList.add('hidd
 document.getElementById('mAdd').onclick=()=>{if(!mesa){alert('Escaneie QR da mesa');return;}let total=detalhe.preco+adds.reduce((s,a)=>s+a.preco,0);carrinho.push({base:detalhe.nome,foto:detalhe.foto,preco:total,extras:[...adds]});updateCart();closeModal();};
 function updateCart(){let total=carrinho.reduce((s,c)=>s+c.preco,0);document.getElementById('sacolaTotal').textContent=`R$ ${total.toFixed(2)} • ${carrinho.length} itens`;document.getElementById('total').textContent='R$ '+total.toFixed(2);document.getElementById('carrinho').innerHTML=carrinho.map((c,i)=>`<div class="flex gap-2 bg-zinc-50 p-3 rounded-2xl mb-2"><img src="${c.foto}" class="w-12 h-12 rounded-xl object-cover"><div class="flex-1"><p class="font-black text-xs">${c.base}</p><p class="text-[10px] text-zinc-500">${c.extras.map(e=>e.nome).join(', ')}</p></div><button onclick="carrinho.splice(${i},1);updateCart()">✕</button></div>`).join('')||'<p class="text-center py-10 text-zinc-400">Sacola vazia</p>';}
 document.getElementById('btnVerSacola').onclick=()=>document.getElementById('modalSacola').classList.remove('hidden');window.closeSacola=()=>document.getElementById('modalSacola').classList.add('hidden');
-document.getElementById('btnPedir').onclick=async()=>{let nome=document.getElementById('nome').value.trim(),whats=document.getElementById('whats').value.trim();if(!nome||!whats)return alert('Nome e WhatsApp obrigatórios');if(carrinho.length==0)return alert('Sacola vazia');let total=carrinho.reduce((s,c)=>s+c.preco,0);let pedido={id:Date.now().toString(),mesa,cliente:nome,whats,obs:document.getElementById('obs').value,itens:[...carrinho],total,status:'novo',hora:Date.now()};await db.collection('pedidos').doc(pedido.id).set(pedido);carrinho=[];updateCart();closeSacola();alert('✅ Pedido enviado! Mesa '+mesa+' - Aguarde tempo estimado da cozinha');};
-if(mesa){db.collection('pedidos').where('mesa','==',String(mesa)).onSnapshot(s=>{pedidos=s.docs.map(d=>d.data());renderTracking();});}
+document.getElementById('btnPedir').onclick=async()=>{let nome=document.getElementById('nome').value.trim(),whats=document.getElementById('whats').value.trim();if(!nome||!whats)return alert('Nome e WhatsApp obrigatórios');if(carrinho.length==0)return alert('Sacola vazia');let pedido={id:Date.now().toString(),mesa:String(mesa),cliente:nome,whats,obs:document.getElementById('obs').value,itens:[...carrinho],total:carrinho.reduce((s,c)=>s+c.preco,0),status:'novo',hora:Date.now()};await db.collection('pedidos').doc(pedido.id).set(pedido);carrinho=[];updateCart();closeSacola();alert('✅ Pedido enviado! Mesa '+mesa);};
+if(mesa){
+db.collection('pedidos').where('mesa','==',String(mesa)).onSnapshot(s=>{
+  pedidos=s.docs.map(d=>d.data()).sort((a,b)=>(b.hora||0)-(a.hora||0));
+  renderTracking();
+});
+}
 function renderTracking(){
 if(!mesa)return;
 let meus=pedidos.filter(p=>p.status!='entregue');
 let wrap=document.getElementById('trackingWrap');
-if(meus.length==0){wrap.classList.add('hidden');return;}
+if(meus.length==0){
+  wrap.classList.add('hidden');
+  document.getElementById('heroMesa').innerHTML=`<div><p class="text-[10px] font-black">MESA LIBERADA</p><p class="bebas text-5xl">MESA ${mesa} PRONTA</p><p class="text-xs">Novo cliente pode pedir</p></div><div class="text-5xl">🍔</div>`;
+  return;
+}
 wrap.classList.remove('hidden');
 document.getElementById('trackMesa').textContent=mesa;
 document.getElementById('trackList').innerHTML=meus.map(o=>{
 let step=o.status=='novo'?1:o.status=='preparo'?2:3;
 let tempoHtml='';
 if(o.status=='novo'){
-tempoHtml=`<div class="mt-2 bg-white/5 border border-white/10 p-2.5 rounded-xl text-center"><p class="text-[11px] text-white/60 font-bold">⏳ Aguardando cozinha definir tempo...</p></div>`;
+tempoHtml=`<div class="mt-2 bg-white/5 border p-2.5 rounded-xl text-center"><p class="text-[11px] text-white/60 font-bold">⏳ Aguardando cozinha definir tempo...</p></div>`;
 }else if(o.status=='preparo' && o.tempoEstimado){
 let restante=Math.max(0,Math.ceil((o.previsaoPronto - Date.now())/60000));
-if(restante>0){
-tempoHtml=`<div class="mt-2 bg-yellow-400 text-black p-2.5 rounded-xl flex justify-between items-center"><p class="font-black text-[11px]">⏱️ TEMPO: ${o.tempoEstimado} MIN</p><p class="font-black text-sm">${restante} MIN RESTANTES</p></div><div class="mt-2 bg-white/10 rounded-full h-2 overflow-hidden"><div class="h-2 bg-yellow-400" style="width:${Math.max(5,100 - (restante/o.tempoEstimado*100))}%"></div></div>`;
-}else{
-tempoHtml=`<div class="mt-2 bg-red-500 text-white p-2.5 rounded-xl text-center font-black text-xs animate-pulse">⏰ QUASE PRONTO! Finalizando...</div>`;
-}
+tempoHtml= restante>0 ? `<div class="mt-2 bg-yellow-400 text-black p-2.5 rounded-xl flex justify-between"><p class="font-black text-[11px]">⏱️ ${o.tempoEstimado} MIN</p><p class="font-black text-sm">${restante} MIN RESTANTES</p></div><div class="mt-2 bg-white/10 rounded-full h-2 overflow-hidden"><div class="h-2 bg-yellow-400" style="width:${Math.max(5,100 - (restante/o.tempoEstimado*100))}%"></div></div>` : `<div class="mt-2 bg-red-500 text-white p-2.5 rounded-xl text-center font-black text-xs animate-pulse">⏰ QUASE PRONTO!</div>`;
 }else if(o.status=='pronto'){
 tempoHtml=`<p class="mt-2 bg-green-600 text-white p-2.5 rounded-xl text-center font-black text-xs animate-pulse">✅ PRONTO! RETIRE NO BALCÃO MESA ${o.mesa}</p>`;
 }
