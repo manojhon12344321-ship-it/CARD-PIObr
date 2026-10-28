@@ -11,8 +11,23 @@
 </head>
 <body class="bg-[#0B0B0B] text-white pb-32">
 <header class="sticky top-0 z-30 bg-black/90 backdrop-blur border-b border-white/5"><div class="max-w-[1200px] mx-auto px-4 py-3 flex justify-between items-center"><div class="flex gap-3 items-center"><div id="logoAdmin" class="w-9 h-9 bg-yellow-400 rounded-full grid place-items-center text-black font-black cursor-pointer">BH</div><p class="bebas text-xl">BURGER HOUSE</p></div><div id="mesaBadge" class="hidden bg-white text-black px-4 py-1 rounded-full text-xs font-black">MESA <span id="mesaNum"></span></div></div></header>
-<main class="max-w-[1200px] mx-auto px-4"><div id="heroMesa" class="hidden mt-4 bg-yellow-400 text-black rounded-[28px] p-5 flex justify-between"><div><p class="text-[10px] font-black">VOCÊ ESTÁ NA</p><p class="bebas text-5xl">MESA <span id="heroMesaNum"></span></p></div><div class="text-5xl">🍔</div></div>
-<div id="avisoSemMesa" class="hidden mt-4 bg-white/5 border border-white/10 rounded-[20px] p-4 text-center"><p class="text-sm font-bold">⚠️ Acesse pelo QR Code da mesa</p><p class="text-xs text-white/50 mt-1">Escaneie o QR Code da sua mesa para fazer o pedido</p></div>
+<main class="max-w-[1200px] mx-auto px-4">
+<div id="heroMesa" class="hidden mt-4 bg-yellow-400 text-black rounded-[28px] p-5 flex justify-between"><div><p class="text-[10px] font-black">VOCÊ ESTÁ NA</p><p class="bebas text-5xl">MESA <span id="heroMesaNum"></span></p></div><div class="text-5xl">🍔</div></div>
+
+<div id="avisoSemMesa" class="hidden mt-4 bg-white/5 border border-white/10 rounded-[20px] p-3 text-center"><p class="text-[11px] font-black text-yellow-400">⚠️ Escaneie o QR Code da sua mesa para pedir</p></div>
+
+<!-- CARROSSEL APRESENTÁVEL - MESMAS IMAGENS DO CATALOGO - IGUAL PARA TODAS AS MESAS -->
+<div class="mt-5 relative rounded-[32px] overflow-hidden bg-[#141414] border border-white/[0.07] shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+  <div class="absolute top-0 left-0 z-10 m-4 flex gap-2">
+    <span class="bg-yellow-400 text-black px-4 py-1.5 rounded-full text-[11px] font-black">🔥 MAIS PEDIDOS</span>
+    <span class="bg-black/70 backdrop-blur text-white px-3 py-1.5 rounded-full text-[10px] font-bold border border-white/10">CATÁLOGO</span>
+  </div>
+  <div id="carrosselTrack" class="flex transition-transform duration-700 ease-out will-change-transform"></div>
+  <div id="carrosselDots" class="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 flex gap-2 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10"></div>
+  <button onclick="carrosselPrev()" class="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-black/60 backdrop-blur border border-white/10 rounded-full grid place-items-center text-white">‹</button>
+  <button onclick="carrosselNext()" class="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-black/60 backdrop-blur border border-white/10 rounded-full grid place-items-center text-white">›</button>
+</div>
+
 <div class="mt-6 flex gap-2 overflow-auto pb-2"><button onclick="filtrar('todos')" id="f-todos" class="bg-yellow-400 text-black px-5 py-2 rounded-full text-xs font-black">TODOS • 18</button><button onclick="filtrar('burger')" id="f-burger" class="bg-white/10 px-5 py-2 rounded-full text-xs font-bold">🍔 BURGERS</button><button onclick="filtrar('porcao')" id="f-porcao" class="bg-white/10 px-5 py-2 rounded-full text-xs font-bold">🍟 PORÇÕES</button><button onclick="filtrar('bebida')" id="f-bebida" class="bg-white/10 px-5 py-2 rounded-full text-xs font-bold">🥤 BEBIDAS</button></div>
 <div id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4"></div></main>
 <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black"><div class="max-w-[1200px] mx-auto"><div class="bg-white text-black rounded-[24px] p-4 flex justify-between"><div><p class="text-[10px] text-zinc-400">MESA <span id="sacolaMesa">-</span></p><p id="sacolaTotal" class="font-black">R$ 0,00 • 0 itens</p></div><button id="btnVerSacola" class="bg-black text-white px-6 py-3 rounded-full font-black text-sm">VER SACOLA</button></div></div></div>
@@ -22,7 +37,7 @@
 <script>
 const firebaseConfig={apiKey:"AIzaSyDfnlWLGHySS42WMOcve1qP-dSH3cF-J50",authDomain:"cardapiobr-be645.firebaseapp.com",projectId:"cardapiobr-be645",storageBucket:"cardapiobr-be645.firebasestorage.app",messagingSenderId:"1013095361613",appId:"1:1013095361613:web:31d58aa9ebda0135110004"};
 let db;try{firebase.initializeApp(firebaseConfig);db=firebase.firestore();}catch(e){}
-// === CORREÇÃO: MESA SÓ APARECE SE TIVER ?mesa= NA URL ===
+// CORREÇÃO MESA - SÓ PEGA DA URL, NÃO DO LOCALSTORAGE
 let mesa=new URLSearchParams(location.search).get('mesa')||'';
 let carrinho=[],detalhe=null,adds=[],pedidos=[],filtro='todos';
 const cardapio=[
@@ -46,7 +61,6 @@ const cardapio=[
 {nome:'MILKSHAKE OREO',preco:16,desc:'Milkshake cremoso Oreo 400ml.',foto:'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600',cat:'bebida',ingredientes:['Sorvete creme','Leite','4x Biscoito Oreo','Calda chocolate']},
 ];
 const extras=[{nome:'Bacon Extra',preco:6},{nome:'Cheddar Extra',preco:5},{nome:'Ovo Frito',preco:4},{nome:'Cebola Caramelizada',preco:3},{nome:'Molho da Casa',preco:2},{nome:'Picles Extra',preco:2}];
-// CONTROLE DE MESA CORRIGIDO
 if(mesa){
   mesa=mesa.replace(/\D/g,'');
   if(mesa){
@@ -56,31 +70,55 @@ if(mesa){
     document.getElementById('heroMesaNum').textContent=mesa;
     document.getElementById('sacolaMesa').textContent=mesa;
     document.getElementById('modalMesa').textContent=mesa;
-    document.getElementById('avisoSemMesa').classList.add('hidden');
   }
-} else {
+}else{
   localStorage.removeItem('mesa');
-  document.getElementById('mesaBadge').classList.add('hidden');
-  document.getElementById('heroMesa').classList.add('hidden');
   document.getElementById('sacolaMesa').textContent='-';
   document.getElementById('modalMesa').textContent='-';
   document.getElementById('avisoSemMesa').classList.remove('hidden');
 }
+let carrosselIndex=0;
+function renderCarrossel(){
+  let destaques=cardapio.filter(c=>c.cat==='burger');
+  let track=document.getElementById('carrosselTrack');
+  let dots=document.getElementById('carrosselDots');
+  track.innerHTML=destaques.map((c)=>{
+    let i=cardapio.indexOf(c);
+    return `<div class="min-w-full relative h-[380px] md:h-[440px] cursor-pointer" onclick="openM(${i})">
+      <img src="${c.foto}" class="w-full h-full object-cover">
+      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/10"></div>
+      <div class="absolute bottom-0 left-0 p-7 w-full">
+        <div class="flex gap-2 mb-3"><span class="bg-yellow-400 text-black text-[11px] font-black px-3 py-1 rounded-full">R$ ${c.preco.toFixed(2)}</span><span class="bg-white/10 backdrop-blur border border-white/10 text-white text-[10px] font-bold px-3 py-1 rounded-full">${c.cat.toUpperCase()}</span></div>
+        <h3 class="bebas text-5xl leading-[0.9]">${c.nome}</h3>
+        <p class="text-[13px] text-white/70 mt-2 max-w-[320px]">${c.desc}</p>
+        <p class="mt-4 bg-white text-black px-5 py-2.5 rounded-full text-[11px] font-black inline-block">VER INGREDIENTES →</p>
+      </div>
+    </div>`;
+  }).join('');
+  dots.innerHTML=destaques.map((_,j)=>`<div id="cdot-${j}" class="transition-all ${j==0?'w-8 h-2 bg-yellow-400 rounded-full':'w-2 h-2 bg-white/30 rounded-full'}"></div>`).join('');
+}
+function updateCarrossel(){
+  let track=document.getElementById('carrosselTrack');
+  let total=cardapio.filter(c=>c.cat==='burger').length;
+  track.style.transform=`translateX(-${carrosselIndex*100}%)`;
+  for(let j=0;j<total;j++){let d=document.getElementById(`cdot-${j}`); if(d) d.className=`transition-all ${j==carrosselIndex?'w-8 h-2 bg-yellow-400 rounded-full':'w-2 h-2 bg-white/30 rounded-full'}`;}
+}
+window.carrosselNext=()=>{let total=cardapio.filter(c=>c.cat==='burger').length; carrosselIndex=(carrosselIndex+1)%total; updateCarrossel();}
+window.carrosselPrev=()=>{let total=cardapio.filter(c=>c.cat==='burger').length; carrosselIndex=(carrosselIndex-1+total)%total; updateCarrossel();}
 window.filtrar=(cat)=>{filtro=cat;document.querySelectorAll('[id^=f-]').forEach(b=>b.className='bg-white/10 px-5 py-2 rounded-full text-xs font-bold');document.getElementById('f-'+cat).className='bg-yellow-400 text-black px-5 py-2 rounded-full text-xs font-black';renderMenu();};
 function renderMenu(){let lista=filtro=='todos'?cardapio:cardapio.filter(c=>c.cat==filtro);document.getElementById('grid').innerHTML=lista.map((c)=>{let i=cardapio.indexOf(c);return `<div onclick="openM(${i})" class="bg-[#161616] rounded-[22px] overflow-hidden cursor-pointer border border-white/5"><img src="${c.foto}" class="w-full h-[130px] md:h-[180px] object-cover"><div class="p-3 md:p-5"><h3 class="bebas text-[16px] md:text-xl">${c.nome}</h3><p class="text-[11px] text-white/40">${c.desc}</p><p class="font-black mt-2">R$ ${c.preco.toFixed(2)}</p></div></div>`}).join('');}
 window.openM=(i)=>{detalhe=cardapio[i];adds=[];document.getElementById('mFoto').src=detalhe.foto;document.getElementById('mNome').textContent=detalhe.nome;document.getElementById('mDesc').textContent=detalhe.desc;document.getElementById('mIngredientes').innerHTML=`<p class="font-black text-[11px] text-yellow-400">📋 INGREDIENTES:</p><div class="mt-2 grid gap-1">${detalhe.ingredientes.map(ing=>`<p class="text-xs text-white/70">• ${ing}</p>`).join('')}</div>`;document.getElementById('mPrecoBase').textContent='R$ '+detalhe.preco.toFixed(2);document.getElementById('mAdds').innerHTML=`<p class="font-black text-[11px] text-white/50">➕ ADICIONAIS:</p>`+extras.map((e,j)=>`<label class="flex justify-between bg-white/5 p-3 rounded-xl text-sm mt-2"><span><input type="checkbox" onchange="toggleA(${j})"> ${e.nome}</span><span class="text-yellow-400">+R$ ${e.preco}</span></label>`).join('');calc();document.getElementById('modalLanche').classList.remove('hidden');}
 window.toggleA=(j)=>{let e=extras[j];if(adds.find(x=>x.nome==e.nome))adds=adds.filter(x=>x.nome!=e.nome);else adds.push(e);calc();};
 function calc(){document.getElementById('mTotal').textContent='R$ '+(detalhe.preco+adds.reduce((s,a)=>s+a.preco,0)).toFixed(2);}
 window.closeModal=()=>document.getElementById('modalLanche').classList.add('hidden');
-document.getElementById('mAdd').onclick=()=>{if(!mesa){alert('⚠️ Escaneie o QR Code da mesa para pedir!');return;}let total=detalhe.preco+adds.reduce((s,a)=>s+a.preco,0);carrinho.push({base:detalhe.nome,foto:detalhe.foto,preco:total,extras:[...adds],ingredientes:[...detalhe.ingredientes]});updateCart();closeModal();};
+document.getElementById('mAdd').onclick=()=>{if(!mesa){alert('Escaneie QR da mesa');return;}let total=detalhe.preco+adds.reduce((s,a)=>s+a.preco,0);carrinho.push({base:detalhe.nome,foto:detalhe.foto,preco:total,extras:[...adds],ingredientes:[...detalhe.ingredientes]});updateCart();closeModal();};
 function updateCart(){let total=carrinho.reduce((s,c)=>s+c.preco,0);document.getElementById('sacolaTotal').textContent=`R$ ${total.toFixed(2)} • ${carrinho.length} itens`;document.getElementById('total').textContent='R$ '+total.toFixed(2);document.getElementById('carrinho').innerHTML=carrinho.map((c,i)=>`<div class="bg-zinc-50 p-3 rounded-2xl mb-2"><div class="flex gap-2"><img src="${c.foto}" class="w-12 h-12 rounded-xl object-cover"><div class="flex-1"><p class="font-black text-xs">${c.base}</p><p class="text-[9px] text-zinc-500 mt-1">📋 ${c.ingredientes.join(', ')}</p><p class="text-[9px] text-orange-600 font-bold mt-1">${c.extras.length? '➕ Adicionais: '+c.extras.map(e=>e.nome).join(', '):'Sem adicionais'}</p></div><button onclick="carrinho.splice(${i},1);updateCart()">✕</button></div></div>`).join('')||'<p class="text-center py-10 text-zinc-400">Sacola vazia</p>';}
 document.getElementById('btnVerSacola').onclick=()=>document.getElementById('modalSacola').classList.remove('hidden');window.closeSacola=()=>document.getElementById('modalSacola').classList.add('hidden');
-document.getElementById('btnPedir').onclick=async()=>{if(!mesa)return alert('Escaneie o QR da mesa!');let nome=document.getElementById('nome').value.trim();if(!nome)return alert('Digite seu nome!');if(carrinho.length==0)return alert('Sacola vazia');let pedido={id:Date.now().toString(),mesa:String(mesa),cliente:nome,obs:document.getElementById('obs').value,itens:[...carrinho],total:carrinho.reduce((s,c)=>s+c.preco,0),status:'novo',hora:Date.now()};await db.collection('pedidos').doc(pedido.id).set(pedido);carrinho=[];updateCart();closeSacola();alert('✅ Pedido enviado! Mesa '+mesa);};
-if(mesa&&db){db.collection('pedidos').where('mesa','==',String(mesa)).onSnapshot(s=>{pedidos=s.docs.map(d=>d.data()).sort((a,b)=>(a.hora||0)-(b.hora||0));renderTracking();});}
-function renderTracking(){if(!mesa)return;let meus=pedidos.filter(p=>p.status!='entregue');let wrap=document.getElementById('trackingWrap');if(meus.length==0){wrap.classList.add('hidden');document.getElementById('heroMesa').innerHTML=`<div><p class="text-[10px] font-black">MESA LIBERADA</p><p class="bebas text-5xl">MESA ${mesa} PRONTA</p><p class="text-xs">Novo cliente pode pedir</p></div><div class="text-5xl">🍔</div>`;return;}wrap.classList.remove('hidden');document.getElementById('trackMesa').textContent=mesa;document.getElementById('trackList').innerHTML=meus.map(o=>{let step=o.status=='novo'?1:o.status=='preparo'?2:3;let tempoHtml='';if(o.status=='novo'){tempoHtml=`<div class="mt-2 bg-white/5 border p-2.5 rounded-xl text-center"><p class="text-[11px] text-white/60 font-bold">⏳ Aguardando cozinha definir tempo...</p></div>`;}else if(o.status=='preparo' && o.tempoEstimado){let restante=Math.max(0,Math.ceil((o.previsaoPronto - Date.now())/60000));tempoHtml= restante>0 ? `<div class="mt-2 bg-yellow-400 text-black p-2.5 rounded-xl flex justify-between"><p class="font-black text-[11px]">⏱️ ${o.tempoEstimado} MIN</p><p class="font-black text-sm">${restante} MIN RESTANTES</p></div><div class="mt-2 bg-white/10 rounded-full h-2 overflow-hidden"><div class="h-2 bg-yellow-400" style="width:${Math.max(5,100 - (restante/o.tempoEstimado*100))}%"></div></div>` : `<div class="mt-2 bg-red-500 text-white p-2.5 rounded-xl text-center font-black text-xs animate-pulse">⏰ QUASE PRONTO!</div>`;}else if(o.status=='pronto'){tempoHtml=`<p class="mt-2 bg-green-600 text-white p-2.5 rounded-xl text-center font-black text-xs animate-pulse">✅ PRONTO! RETIRE NO BALCÃO MESA ${o.mesa}</p>`;}return `<div class="bg-white text-black rounded-[16px] p-3"><div class="flex justify-between"><p class="font-black text-xs">#${o.id.slice(-4)} • R$ ${o.total.toFixed(2)} ${o.tempoEstimado?'• ⏱️ '+o.tempoEstimado+'MIN':''}</p><p class="text-[10px] bg-black text-white px-2 py-1 rounded-full">${o.status.toUpperCase()}</p></div><div class="flex gap-2 mt-2"><div class="flex-1 h-1.5 bg-zinc-200 rounded-full ${step>=1?'!bg-yellow-400':''}"></div><div class="flex-1 h-1.5 bg-zinc-200 rounded-full ${step>=2?'!bg-orange-400':''}"></div><div class="flex-1 h-1.5 bg-zinc-200 rounded-full ${step>=3?'!bg-green-500':''}"></div></div>${tempoHtml}</div>`;}).join('');}
+document.getElementById('btnPedir').onclick=async()=>{let nome=document.getElementById('nome').value.trim();if(!nome)return alert('Digite seu nome!');if(carrinho.length==0)return alert('Sacola vazia');let pedido={id:Date.now().toString(),mesa:String(mesa),cliente:nome,obs:document.getElementById('obs').value,itens:[...carrinho],total:carrinho.reduce((s,c)=>s+c.preco,0),status:'novo',hora:Date.now()};await db.collection('pedidos').doc(pedido.id).set(pedido);carrinho=[];updateCart();closeSacola();alert('✅ Pedido enviado! Mesa '+mesa);};
+if(mesa){db.collection('pedidos').where('mesa','==',String(mesa)).onSnapshot(s=>{pedidos=s.docs.map(d=>d.data()).sort((a,b)=>(a.hora||0)-(b.hora||0));renderTracking();});}
+function renderTracking(){if(!mesa)return;let meus=pedidos.filter(p=>p.status!='entregue');let wrap=document.getElementById('trackingWrap');if(meus.length==0){wrap.classList.add('hidden');return;}wrap.classList.remove('hidden');document.getElementById('trackMesa').textContent=mesa;document.getElementById('trackList').innerHTML=meus.map(o=>{let step=o.status=='novo'?1:o.status=='preparo'?2:3;let tempoHtml='';if(o.status=='novo'){tempoHtml=`<div class="mt-2 bg-white/5 border p-2.5 rounded-xl text-center"><p class="text-[11px] text-white/60 font-bold">⏳ Aguardando cozinha definir tempo...</p></div>`;}else if(o.status=='preparo' && o.tempoEstimado){let restante=Math.max(0,Math.ceil((o.previsaoPronto - Date.now())/60000));tempoHtml= restante>0 ? `<div class="mt-2 bg-yellow-400 text-black p-2.5 rounded-xl flex justify-between"><p class="font-black text-[11px]">⏱️ ${o.tempoEstimado} MIN</p><p class="font-black text-sm">${restante} MIN RESTANTES</p></div><div class="mt-2 bg-white/10 rounded-full h-2 overflow-hidden"><div class="h-2 bg-yellow-400" style="width:${Math.max(5,100 - (restante/o.tempoEstimado*100))}%"></div></div>` : `<div class="mt-2 bg-red-500 text-white p-2.5 rounded-xl text-center font-black text-xs animate-pulse">⏰ QUASE PRONTO!</div>`;}else if(o.status=='pronto'){tempoHtml=`<p class="mt-2 bg-green-600 text-white p-2.5 rounded-xl text-center font-black text-xs animate-pulse">✅ PRONTO! RETIRE NO BALCÃO MESA ${o.mesa}</p>`;}return `<div class="bg-white text-black rounded-[16px] p-3"><div class="flex justify-between"><p class="font-black text-xs">#${o.id.slice(-4)} • R$ ${o.total.toFixed(2)} ${o.tempoEstimado?'• ⏱️ '+o.tempoEstimado+'MIN':''}</p><p class="text-[10px] bg-black text-white px-2 py-1 rounded-full">${o.status.toUpperCase()}</p></div><div class="flex gap-2 mt-2"><div class="flex-1 h-1.5 bg-zinc-200 rounded-full ${step>=1?'!bg-yellow-400':''}"></div><div class="flex-1 h-1.5 bg-zinc-200 rounded-full ${step>=2?'!bg-orange-400':''}"></div><div class="flex-1 h-1.5 bg-zinc-200 rounded-full ${step>=3?'!bg-green-500':''}"></div></div>${tempoHtml}</div>`;}).join('');}
 setInterval(()=>{if(pedidos.length) renderTracking();},10000);
-renderMenu();updateCart();
+renderCarrossel();renderMenu();updateCart();
+setInterval(()=>{carrosselNext();},4000);
 let clicks=0;document.getElementById('logoAdmin').onclick=()=>{clicks++;if(clicks>=5){clicks=0;let s=prompt('Senha admin:');if(s=='1234')location.href='./admin/';else alert('Senha errada');}setTimeout(()=>clicks=0,3000);};
-</script>
-</body>
-</html>
+</script></body></html>
